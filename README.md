@@ -11,7 +11,10 @@ Mockito库能够Mock对象、验证结果以及打桩(stubbing)。
 
 
 ## 目录
+
 0. [迁移到Mockito 2.0](#0)  
+0.1 [对Android的支持](#0.1)   
+0.2 [Configuration-free inline mock making](#0.2)
 1. [验证某些行为](#1)
 2. [如何做一些测试桩 (Stub)](#2)
 3. [参数匹配器 (matchers)](#3)
