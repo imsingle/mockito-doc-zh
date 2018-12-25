@@ -1275,7 +1275,7 @@ partial mock是如果适应这种模式的呢？好吧！它不仅仅是，parti
   </tbody>
 </table>
 
-#方法详情
+# 方法详情
 ## after
 ```java
   public static VerificationAfterDelay after(long millis)
@@ -1401,7 +1401,7 @@ atLeast(1)的别名.
 
 * verification mode<br><br>
 
-#继承org.mockito.Matchers的方法
+# 继承org.mockito.Matchers的方法
 ## any
 ```java
   public static <T> T any()<br><br>
