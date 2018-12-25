@@ -1097,24 +1097,24 @@ Mockito 现在会保留mock方法和类上的注解信息，也会保留泛型�
 <b id="39"></b>
 ### 39. 模拟final类型，枚举 和 final方法 (Since 2.1.0)
 
-Mockito now offers an Incubating, optional support for mocking final classes and methods. This is a fantastic improvement that demonstrates Mockito's everlasting quest for improving testing experience. Our ambition is that Mockito "just works" with final classes and methods. Previously they were considered unmockable, preventing the user from mocking. We already started discussing how to make this feature enabled by default. Currently, the feature is still optional as we wait for more feedback from the community.
-This alternative mock maker which uses a combination of both Java instrumentation API and sub-classing rather than creating a new class to represent a mock. This way, it becomes possible to mock final types and methods.
+Mockito 现在对模拟final类和方法提供一个孵化的，可选的的支持。这是一个极好的改进，说明了Mockito永恒的追求：提高测试体验。我们的志向是：Mockito要支持final类和方法。以前，它们被认为是不可模拟的，阻止用户去模拟的。我们已经开始讨论怎么使这个特性被默认支持。当前，这个特性仍然是可选的，我们等待社区里更多的反馈。
 
-This mock maker is turned off by default because it is based on completely different mocking mechanism that requires more feedback from the community. It can be activated explicitly by the mockito extension mechanism, just create in the classpath a file /mockito-extensions/org.mockito.plugins.MockMaker containing the value mock-maker-inline.
+这个可选的mock maker，它使用Java instrumentation API和子类两者结合的方式，而不是创建一个新的类来代表这个mock对象。通过这种方式，使模拟final类和方法成为了可能。
 
-As a convenience, the Mockito team provides an artifact where this mock maker is preconfigured. Instead of using the mockito-core artifact, include the mockito-inline artifact in your project. Note that this artifact is likely to be discontinued once mocking of final classes and methods gets integrated into the default mock maker.
+这个mock maker默认是关闭的，因为它是基于完全不同的模拟机制，这种机制需要社区更多的反馈。它能通过mockito的扩展机制来被激活，只要在classpath上创建一个文件/mockito-extensions/org.mockito.plugins.MockMaker，文件包含mock-maker-inline这个值。
 
-Some noteworthy notes about this mock maker:
-- Mocking final types and enums is incompatible with mock settings like :
- - explicitly serialization support withSettings().serializable()
- - extra-interfaces withSettings().extraInterfaces()
-- Some methods cannot be mocked
- - Package-visible methods of java.*
- - native methods
-- This mock maker has been designed around Java Agent runtime attachment ; this require a compatible JVM, that is part of the JDK (or Java 9 VM). When running on a non-JDK VM prior to Java 9, it is however possible to manually add the Byte Buddy Java agent jar using the -javaagent parameter upon starting the JVM.
+方便起见，Mockito团队提供了一个artifact，这个artifact里mock maker已经配置好。在项目中引入mockito-inline artifact来代替mockito-core artifact。注意，等到对final类和方法的模拟功能集成到默认的mock maker后，这个artifact可能会停止。
 
-If you are interested in more details of this feature please read the javadoc of org.mockito.internal.creation.bytebuddy.InlineByteBuddyMockMaker
+关于这个mock maker几个需要注意的点是:
+- 模拟final类和枚举的mock配置是不兼容的:
+ - 显示序列化支持 withSettings().serializable()
+ - 特殊接口 withSettings().extraInterfaces()
+- 一些方法不能被模拟
+ - java.*包下的方法
+ - 原生方法
+- 这个mock maker被设计成围绕着Java Agent运行时的附件(attachment)；这个要求一个兼容的JVM，它是JDK的一部分(或Java 9的虚拟机)。当运行在Java 9之前没JDK的虚拟机上，可以在JVM启动时，通过-javaagent参数，手动添加Byte Buddy的jar包。
 
+如果你对这个特性的细节感兴趣，请阅读org.mockito.internal.creation.bytebuddy.InlineByteBuddyMockMaker的java文档。
 
 <b id="40"></b>
 ### 40. “严格的”Mocktio能提高生产效率并使测试用例更清晰(2.+版本之后)
