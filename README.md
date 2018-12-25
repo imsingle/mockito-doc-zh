@@ -390,8 +390,7 @@ public class ArticleManagerTest {
 <b id="11"></b>
 ### 11. 为回调做测试桩
 
-Allows stubbing with generic Answer interface.
-运行为泛型接口Answer打桩。
+允许通过泛型Answer接口进行打桩。
 
 在最初的Mockito里也没有这个具有争议性的特性。我们建议使用thenReturn() 或thenThrow()来打桩。这两种方法足够用于测试或者测试驱动开发。
 
@@ -410,7 +409,7 @@ Allows stubbing with generic Answer interface.
 ```
 
 <b id="12"></b>
-### 12. doReturn()、doThrow()、doAnswer()、doNothing()、doCallRealMethod()系列方法的运用
+### 12. doReturn()|doThrow()| doAnswer()|doNothing()|doCallRealMethod()系列方法的运用
 
 通过`when(Object)`为无返回值的函数打桩有不同的方法,因为编译器不喜欢void函数在括号内...
 
@@ -430,7 +429,7 @@ mockedList.clear();
 
 * 测试void函数
 * 在受监控的对象上测试函数
-* 不知一次的测试为同一个函数，在测试过程中改变mock对象的行为。
+* 不只一次的测试为同一个函数，在测试过程中改变mock对象的行为。
 
 但是在调用`when()`函数时你可以选择是否调用这些上述这些函数。
 
@@ -455,25 +454,20 @@ mockedList.clear();
 List list = new LinkedList();
 List spy = spy(list);
 
-//optionally, you can stub out some methods:
-// 你可以为某些函数打桩
+//可选的，你可以为某些函数打桩:
 when(spy.size()).thenReturn(100);
 
-//using the spy calls *real* methods
-// 通过spy对象调用真实对象的函数
+//通过spy对象调用真实对象的函数
 spy.add("one");
 spy.add("two");
 
-//prints "one" - the first element of a list
-// 输出第一个元素
+//打印第一个元素"one"
 System.out.println(spy.get(0));
 
-//size() method was stubbed - 100 is printed
-// 因为size()函数被打桩了,因此这里返回的是100
+//size()函数被打桩了,因此这里打印的是100
 System.out.println(spy.size());
 
-//optionally, you can verify
-// 交互验证
+//可选的，你可以做校验
 verify(spy).add("one");
 verify(spy).add("two");
 ```
@@ -486,12 +480,10 @@ verify(spy).add("two");
 List list = new LinkedList();
 List spy = spy(list);
 
-//Impossible: real method is called so spy.get(0) throws IndexOutOfBoundsException (the list is yet empty)
-// 不可能 : 因为当调用spy.get(0)时会调用真实对象的get(0)函数,此时会发生IndexOutOfBoundsException异常，因为真实List对象是空的
-   when(spy.get(0)).thenReturn("foo");
+//不可能 : 当调用spy.get(0)时会调用真实对象的get(0)函数，此时会发生IndexOutOfBoundsException异常，因为真实list对象是空的
+when(spy.get(0)).thenReturn("foo");
 
-//You have to use doReturn() for stubbing
-// 你需要使用doReturn()来打桩
+//你必须使用doReturn()来打桩
 doReturn("foo").when(spy).get(0);
 ```
 
@@ -519,9 +511,9 @@ Mockito以java代码风格的形式来验证参数值 : 即通过使用`equals()
 
 ```java
 ArgumentCaptor<Person> argument = ArgumentCaptor.forClass(Person.class);
-// 参数捕获
+//参数捕获
 verify(mock).doSomething(argument.capture());
-// 使用equal断言
+//使用equal断言
 assertEquals("John", argument.getValue().getName());
 ```
 
@@ -535,35 +527,35 @@ assertEquals("John", argument.getValue().getName());
 [ArgumentMatcher]: http://site.mockito.org/mockito/docs/current/org/mockito/ArgumentMatcher.html
 
 <b id="16"></b>
-### 16. 真实的局部mocks (1.8版本之后)
+### 16. 真实的局部模拟对象(mocks) (1.8版本之后)
 
-在内部通过邮件进行了无数争辩和讨论后，最终 Mockito 决定支持部分测试，早前我们不支持是因为我们认为部分测试会让代码变得糟糕。然而，我们发现了部分测试真正合理的用法。[详情点这](http://monkeyisland.pl/2009/01/13/subclass-and-override-vs-partial-mocking-vs-refactoring/)
+在内部通过邮件进行了无数争辩和讨论后，最终 Mockito 决定支持部分mock，早前我们不支持是因为我们认为局部mocks会让代码变得糟糕。然而，我们发现了局部mocks真正合理的用法。[详情点这](http://monkeyisland.pl/2009/01/13/subclass-and-override-vs-partial-mocking-vs-refactoring/)
 
-在 Mockito 1.8 之前，spy() 方法并不会产生真正的部分测试，而这无疑会让一些开发者困惑。更详细的内容可以看：[这里](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#13) 或 [Java 文档](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#spy(T))
+在 Mockito 1.8 之前，spy() 方法并不会产生真正的局部mocks，而这无疑会让一些开发者困惑。更详细的内容可以看：[这里](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#13) 或 [Java 文档](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#spy(T))
 
 ```java
     //you can create partial mock with spy() method:
     List list = spy(new LinkedList());
 
-    //you can enable partial mock capabilities selectively on mocks:
+    //局部mock能力是可选的
     Foo mock = mock(Foo.class);
-    //Be sure the real implementation is 'safe'.
-    //If real implementation throws exceptions or depends on specific state of the object then you're in trouble.
+    //确保这个真实调用是'安全的'
+    //如果真实调用抛了异常或者依赖对象的特殊状态，那么就会有麻烦。（对象被mock，状态可能跟预期不一样。)
     when(mock.someMethod()).thenCallRealMethod();
 ```
 
-一如既往，你会去读部分测试的警告部分：面向对象编程通过将抽象的复杂度拆分为一个个独立，精确的 SRPy 对象中，降低了抽象处理的复杂度。那部分测试是怎么遵循这个规范的呢？事实上部分测试并没有遵循这个规范……部分测试通常意味着抽象的复杂度被移动到同一个对象的不同方法中，在大多数情况下，这不会是你想要的应用架构方式。
+一如既往，你应该去读部分mock的注意事项：面向对象编程通过把复杂系统拆分成独立个体来减少整体的复杂度，尤其是，SRPy对象。那部分mock是怎么遵循这个规范的呢？事实上它并没有遵循这个规范……部分mock通常意味着复杂性被移动到同一个对象的不同方法中，在大多数情况下，这不会是你想要的应用架构方式。
 
-然而，在一些罕见的情况下部分测试才会是易用的：处理不能轻易修改的代码（第三方接口，临时重构的遗留代码等等）。然而，为了新的，测试驱动和架构优秀的代码，我是不会使用部分测试的。
+然而，在一些特殊的情况下部分mocks是方便的：处理不能轻易修改的代码（第三方接口，临时重构的遗留代码等）。然而，为了新的，测试驱动和架构优秀的代码，我是不会使用部分mocks的。
 
 <b id="17"></b>
 ### 17. 重置mocks对象 (1.8版本之后)
 
-聪明的 Mockito 使用者很少会用到这个特性，因为他们知道这是出现糟糕测试单元的信号。通常情况下你不会需要重设你的测试单元，只需要为每一个测试方法重新创建一个测试单元就可以了。
+聪明的 Mockito 使用者很少会用到这个特性，因为他们知道这是出现糟糕测试单元的信号。通常情况下你不会需要重设你的mocks，只需要为每一个测试方法重新创建一个mocks就可以了。
 
-如果你真的想通过 reset() 方法满足某些需求的话，请考虑实现简单，小而且专注于测试方法而不是冗长，精确的测试。首先可能出现的代码异味就是测试方法中间那的 reset() 方法。这可能意味着你已经过度测试了。请遵循测试方法的呢喃：请让我们小，而且专注于单一的行为上。在 Mockito 邮件列表中就有好几个讨论是和这个有关的。
+请考虑实现简单，小并且专注的测试方法，而不是冗长，特殊的测试用例，来代替reset()。首先可能出现的代码异味就是测试方法中间那的 reset() 方法。这可能意味着你已经过度测试了。请倾听测试方法的声音：请让我们小，而且专注在单一的行为上。在 Mockito 邮件列表中就有好几个讨论是和这个有关的。
 
-添加 reset() 方法的唯一原因就是让它能与容器注入的测试单元协作。详情看 [issue 55](http://code.google.com/p/mockito/issues/detail?id=55) 或 [FAQ](http://code.google.com/p/mockito/wiki/FAQ)。
+添加 reset() 方法的唯一原因就是让它能与容器注入的mocks协作。详情看 [issue 55](http://code.google.com/p/mockito/issues/detail?id=55) 或 [FAQ](http://code.google.com/p/mockito/wiki/FAQ)。
 
 别自己给自己找麻烦，reset() 方法在测试方法的中间确实是代码异味。
 
@@ -574,7 +566,7 @@ assertEquals("John", argument.getValue().getName());
    mock.add(1);
 
    reset(mock);
-   //at this point the mock forgot any interactions & stubbing
+   //在此刻，mock对象遗忘了所有的interactions & stubbing
 ```
 
 <b id="18"></b>
