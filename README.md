@@ -1152,47 +1152,48 @@ Mockito默认是一个“宽松的”模拟框架。mock对象可以做交互，
 <b id="42"></b>
 ### 42. 集成新的API: 监听验证开始(verification start)事件(2.11.+版本之后)
 
-Framework integrations such as Spring Boot needs public API to tackle double-proxy use case (issue 1191). We added:
+Spring Boot等框架集成需要公共API来处理双代理用例(issue 1191)。我们新增的:
 
-- New VerificationStartedListener and VerificationStartedEvent enable framework integrators to replace the mock object for verification. The main driving use case is Spring Boot integration. For details see Javadoc for VerificationStartedListener.
-- New public method MockSettings.verificationStartedListeners(VerificationStartedListener...) allows to supply verification started listeners at mock creation time.
-- New handy method MockingDetails.getMock() was added to make the MockingDetails API more complete. We found this method useful during the implementation.
+- 新的 VerificationStartedListener 和 VerificationStartedEvent 使框架集成者替换模拟对象以进行验证。主要的驱动用例是Spring Boot的集成。详情请看VerificationStartedListener的java文档。
+- 新的公共方法MockSettings.verificationStartedListeners(VerificationStartedListener...)允许在mock创建时，提供验证启动的监听器。
+- 新的方便的方法MockingDetails.getMock()被添加，用来使MockingDetails API更加完整。我们发现这个方法在实例化时非常有用。
 
 <b id="43"></b>
 ### 43. 集成新的API: 测试框架支持MockitoSession(2.15.+版本之后)
 
-MockitoSessionBuilder and MockitoSession were enhanced to enable reuse by testing framework integrations (e.g. MockitoRule for JUnit):
+MockitoSessionBuilder and MockitoSession得到增强，以便通过测试框架集成实现重用(例如MockitoRule对于JUnit一样)。
 
-- MockitoSessionBuilder.initMocks(Object...) allows to pass in multiple test class instances for initialization of fields annotated with Mockito annotations like Mock. This method is useful for advanced framework integrations (e.g. JUnit Jupiter), when a test uses multiple, e.g. nested, test class instances.
-- MockitoSessionBuilder.name(String) allows to pass a name from the testing framework to the MockitoSession that will be used for printing warnings when Strictness.WARN is used.
-- MockitoSessionBuilder.logger(MockitoSessionLogger) makes it possible to customize the logger used for hints/warnings produced when finishing mocking (useful for testing and to connect reporting capabilities provided by testing frameworks such as JUnit Jupiter).
-- MockitoSession.setStrictness(Strictness) allows to change the strictness of a MockitoSession for one-off scenarios, e.g. it enables configuring a default strictness for all tests in a class but makes it possible to change the strictness for a single or a few tests.
-- MockitoSession.finishMocking(Throwable) was added to avoid confusion that may arise because there are multiple competing failures. It will disable certain checks when the supplied failure is not null.
+- MockitoSessionBuilder.initMocks(Object...) 允许传入多个测试类的实例，用来初始化被Mockito注解(例如@Mock)注释的字段。当测试使用多个(例如内嵌的)测试类实例时，这个方法对高级框架集成非常有用(例如 JUnit Jupiter)。
+- MockitoSessionBuilder.name(String)允许将名称从测试框架传递到MockitoSession，当使用Strictness.WARN时，MockitoSession将用于打印警告。
+- MockitoSessionBuilder.logger(MockitoSessionLogger)使定制，用于完成模拟时产生的提示/告警 的logger成为了可能(对于测试和连接JUnit Jupiter等测试框架提供的报告功能很有用)。
+- MockitoSession.setStrictness(Strictness)允许在一次性情况下，改变一个MockitoSession的严格性。例如，它可以为一个类下的所有测试用例设置一个默认的严格性，但是也可以改变单个或几个测试用例的严格性。
+- 添加MockitoSession.finishMocking(Throwable)用于避免因多个竞争的失败而可能出现的混乱。当提供的失败用例不是null时，它会关闭某些检查。
 
 <b id="44"></b>
 ### 44. org.mockito.plugins.InstantiatorProvider泄露内部API所以被org.mockito.plugins.InstantiatorProvider2替代(2.15.4版本之后)
 
-InstantiatorProvider returned an internal API. Hence it was deprecated and replaced by InstantiatorProvider2. Old instantiator providers will continue to work, but it is recommended to switch to the new API.
+InstantiatorProvider返回了一个内部API。因此它被启用并且被InstantiatorProvider2替代。旧的调用者提供商将继续工作，但是它被推荐切换到新的API。
 
 <b id="45"></b>
 ### 45. JUnit5+的扩展
 
-For integration with JUnit Jupiter (JUnit5+), use the `org.mockito:mockito-junit-jupiter` artifact. For more information about the usage of the integration, see the JavaDoc of MockitoExtension.
+想要和JUnit Jupiter(JUnit5+)集成，可以使用`org.mockito:mockito-junit-jupiter` artifact。有关集成使用的更多信息，请查阅MockitoExtension的Java文档。
 
 <b id="46"></b>
 ### 46. 新的Mockito.lenient()和MockSettings.lenient()方法(2.20.0版本之后)
 
-Strict stubbing feature is available since early Mockito 2. It is very useful because it drives cleaner tests and improved productivity. Strict stubbing reports unnecessary stubs, detects stubbing argument mismatch and makes the tests more DRY (Strictness.STRICT_STUBS). This comes with a trade-off: in some cases, you may get false negatives from strict stubbing. To remedy those scenarios you can now configure specific stubbing to be lenient, while all the other stubbings and mocks use strict stubbing:
+在Mockito2早期开始，就有严格打桩的特性。它非常有用，因为它驱动更整洁的测试用例和提供生产率。严格打桩上报非必要的桩点，检查打桩参数不匹配 并且使测试用例更DRY(Strictness.STRICT_STUBS)。这需要权衡：在某些情况，你可能从严格打桩得到错误的否定。为了补救这种情况，你可以将特定打桩配置为宽松的，而所有其他的打桩和mocks使用严格打桩:
 
 ```java
  lenient().when(mock.foo()).thenReturn("ok");
  ```
- If you want all the stubbings on a given mock to be lenient, you can configure the mock accordingly:
+ 
+ 如果你想在给定的mock对象的所有打桩都是宽松的，你可以按照下面的方式配置mock对象:
 ```java
  Foo mock = Mockito.mock(Foo.class, withSettings().lenient());
  
 ```
-For more information refer to lenient(). Let us know how do you find the new feature by opening a GitHub issue to discuss!
+查阅lenient()更多的信息。开启一个GitHub的issue来讨论，让我们知道你是怎么发现这个新特性。
 
 ###字段摘要
 
