@@ -1002,54 +1002,54 @@ partial mock是如果适应这种模式的呢？好吧！它不仅仅是，parti
 然而，当partial mocks派上用场同样也有少许情况:处理你不易改变的代码（第三方接口，legacy code的临时重构）.我将不使用partial mocks用于新的、测试驱动以及设计不错的代码。<br><br>
 例如：<br>
 <table><tr><td bgcolor=#000000><font color=#ffffff>
-	 Foo mock = mock(Foo.class, CALLS_REAL_METHODS);<br><br>
- 	// this calls the real implementation of Foo.getSomething()<br>
-	 value = mock.getSomething();<br><br>
-	 when(mock.getSomething()).thenReturn(fakeValue);<br><br>
- 	// now fakeValue is returned<br>
- 	value = mock.getSomething();</font></td></tr></table>
+   Foo mock = mock(Foo.class, CALLS_REAL_METHODS);<br><br>
+  // this calls the real implementation of Foo.getSomething()<br>
+   value = mock.getSomething();<br><br>
+   when(mock.getSomething()).thenReturn(fakeValue);<br><br>
+  // now fakeValue is returned<br>
+  value = mock.getSomething();</font></td></tr></table>
 </tbody>
 </table>
 
 ###方法摘要
 <table>
-	<tbody>
-	<tr>
-		<td><em>Modifier and Type</em></td>
-		<td><em>Method and Description</em></td>
-	</tr>
-	<tr>
-		<td>static VerificationAfterDelay</td>
-		<td>after(long millis)<br>
-		给定的时间后进行验证</td>
-	</tr>
-	<tr>
-		<td>static VerificationMode</td>
-		<td>atLeast(int minNumberOfInvocations)<br>
-		至少进行minNumberOfInvocations次验证</td>
-	</tr>
-	<tr>
-		<td>static VerificationMode</td>
-		<td>atLeastOnce()<br>
-		至少进行一次验证</td>
-	</tr>
-	<tr>
-		<td>static VerificationMode</td>
-		<td>atMost(int maxNumberOfInvocations)<br>
-		最多进行maxNumberOfInvocations次验证</td>
-	</tr>
-	<tr>
-		<td>static VerificationMode</td>
-		<td>calls(int wantedNumberOfInvocations)<br>
-		允许顺序进行non-greedy验证</td>
-	</tr>
-	</tbody>
+  <tbody>
+  <tr>
+    <td><em>Modifier and Type</em></td>
+    <td><em>Method and Description</em></td>
+  </tr>
+  <tr>
+    <td>static VerificationAfterDelay</td>
+    <td>after(long millis)<br>
+    给定的时间后进行验证</td>
+  </tr>
+  <tr>
+    <td>static VerificationMode</td>
+    <td>atLeast(int minNumberOfInvocations)<br>
+    至少进行minNumberOfInvocations次验证</td>
+  </tr>
+  <tr>
+    <td>static VerificationMode</td>
+    <td>atLeastOnce()<br>
+    至少进行一次验证</td>
+  </tr>
+  <tr>
+    <td>static VerificationMode</td>
+    <td>atMost(int maxNumberOfInvocations)<br>
+    最多进行maxNumberOfInvocations次验证</td>
+  </tr>
+  <tr>
+    <td>static VerificationMode</td>
+    <td>calls(int wantedNumberOfInvocations)<br>
+    允许顺序进行non-greedy验证</td>
+  </tr>
+  </tbody>
 </table>
 
 #方法详情
-##after
+## after
 ```java
-	public static VerificationAfterDelay after(long millis)
+  public static VerificationAfterDelay after(long millis)
 ```
 
 在给定的时间后进行验证。它会为了预期的效果进行等待一段时间后进行验证，而不是因为没发生而立即失败。这可能对于测试多并发条件非常有用。<br><br>
@@ -1062,20 +1062,20 @@ after()等待整个周期的特点不同于timeout()，而timeout()一旦验证�
 
 ```java
 
-	//passes after 100ms, if someMethod() has only been called once at that time.<br>
-	verify(mock, after(100)).someMethod();<br>
-	//above is an alias to:<br>
-	verify(mock, after(100).times(1)).someMethod();
+  //passes after 100ms, if someMethod() has only been called once at that time.<br>
+  verify(mock, after(100)).someMethod();<br>
+  //above is an alias to:<br>
+  verify(mock, after(100).times(1)).someMethod();
 
-	//passes if someMethod() is called *exactly* 2 times after the given timespan
-	verify(mock, after(100).times(2)).someMethod();
+  //passes if someMethod() is called *exactly* 2 times after the given timespan
+  verify(mock, after(100).times(2)).someMethod();
 
-	//passes if someMethod() has not been called after the given timespan<br>
-	verify(mock, after(100).never()).someMethod();
+  //passes if someMethod() has not been called after the given timespan<br>
+  verify(mock, after(100).never()).someMethod();
 
-	//verifies someMethod() after a given time span using given verification mode
-	//useful only if you have your own custom verification modes.
-	verify(mock, new After(100, yourOwnVerificationMode)).someMethod();
+  //verifies someMethod() after a given time span using given verification mode
+  //useful only if you have your own custom verification modes.
+  verify(mock, new After(100, yourOwnVerificationMode)).someMethod();
 ```
 
 参照<a href="http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html">Mockito</a>类的javadoc帮助文档中的例子
@@ -1089,15 +1089,15 @@ after()等待整个周期的特点不同于timeout()，而timeout()一旦验证�
 * verification mode
 
 
-##atLeast
+## atLeast
 ```java
-	public static VerificationMode atLeast(int minNumberOfInvocations)
+  public static VerificationMode atLeast(int minNumberOfInvocations)
 ```
 
 允许至少进行x次验证。例如：
 
 ```java
-	verify(mock, atLeast(3)).someMethod("some arg");
+  verify(mock, atLeast(3)).someMethod("some arg");
 ```
 
 参照<a href="http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html">Mockito</a>类的javadoc帮助文档中的例子
@@ -1110,15 +1110,15 @@ after()等待整个周期的特点不同于timeout()，而timeout()一旦验证�
 
 * verification mode<br><br>
 
-##atLeastOnce
+## atLeastOnce
 ```java
-	public static VerificationMode atLeastOnce()
+  public static VerificationMode atLeastOnce()
 ```
 
 至少进行一次一次验证。例如:
 
 ```java
-	verify(mock, atLeastOnce()).someMethod("some arg");
+  verify(mock, atLeastOnce()).someMethod("some arg");
 ```
 
 atLeast(1)的别名.
@@ -1128,15 +1128,15 @@ atLeast(1)的别名.
 
 * verification mode
 
-##atMost
+## atMost
 ```java
-	public static VerificationMode atMost(int maxNumberOfInvocations)
+  public static VerificationMode atMost(int maxNumberOfInvocations)
 ```
 
 至多进行x次验证. 例如:
 
 ```java
-	verify(mock, atMost(3)).someMethod("some arg");
+  verify(mock, atMost(3)).someMethod("some arg");
 ```
 
 参照<a href="http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html">Mockito</a>类的javadoc帮助文档中的例子
@@ -1149,14 +1149,14 @@ atLeast(1)的别名.
 
 * verification mode
 
-##calls
+## calls
 ```java
-	public static VerificationMode calls(int wantedNumberOfInvocations)
+  public static VerificationMode calls(int wantedNumberOfInvocations)
 ```
 
 允许顺序进行non-greedy验证. 例如:<br>
 ```java
-	inOrder.verify( mock, calls( 2 )).someMethod( "some arg" );
+  inOrder.verify( mock, calls( 2 )).someMethod( "some arg" );
 ```
 <ul>
 <li>如果这个方法调用3次不会失败，不同于times(2)</li>
@@ -1173,9 +1173,9 @@ atLeast(1)的别名.
 * verification mode<br><br>
 
 #继承org.mockito.Matchers的方法
-##any
+## any
 ```java
-	public static <T> T any()<br><br>
+  public static <T> T any()<br><br>
 ```
 
 匹配任何值，包括null
@@ -1189,11 +1189,11 @@ anyObject()的别名
 **Returns:**
 
 * null
-	
+  
 <!--第二行-->
-##any
+## any
 ```java
-	public static <T> T any(Class<T> clazz)
+  public static <T> T any(Class<T> clazz)
 ```
 
 匹配任何对象，包括null
@@ -1208,9 +1208,9 @@ anyObject()的别名
 
 * null
 <!--第三行-->
-##anyBoolean
+## anyBoolean
 ```java
-	public static boolean anyBoolean()
+  public static boolean anyBoolean()
 ```
 
 任何boolean类型或非空(non-null)的Boolean.
@@ -1222,9 +1222,9 @@ anyObject()的别名
 * false
 
 <!--第四行-->
-##anyByte
+## anyByte
 ```java
-	public static byte anyByte()
+  public static byte anyByte()
 ```
 
 任何byte类型变量或非空(non-null)Byte.
@@ -1236,9 +1236,9 @@ anyObject()的别名
 * 0
 
 <!--第五行-->
-##anyChar
+## anyChar
 ```java
-	public static char anyChar()
+  public static char anyChar()
 ```
 
 任何char类型变量或非空(non-null)的Character.
@@ -1250,7 +1250,7 @@ anyObject()的别名
 * 0
 
 <!--第六行-->
-##anyCollection
+## anyCollection
 ```java
 public static Collection anyCollection()
 ```
@@ -1264,7 +1264,7 @@ public static Collection anyCollection()
 * 空Collection.
 
 <!--第七行-->
-##anyCollectionOf
+## anyCollectionOf
 ```java
 public static < T > Collection < T > anyCollectionOf(Class<T> clazz)
 ```
@@ -1286,9 +1286,9 @@ public static < T > Collection < T > anyCollectionOf(Class<T> clazz)
 * 空Collection.<br><br>
 
 <!--第八行-->
-##anyDouble
+## anyDouble
 ```java
-	public static double anyDouble()
+  public static double anyDouble()
 ```
 
 任何double类型或非空(non-null)的Double.
@@ -1300,9 +1300,9 @@ public static < T > Collection < T > anyCollectionOf(Class<T> clazz)
 * 0.
 
 <!--第九行-->
-##anyFloat
+## anyFloat
 ```java
-	public static float anyFloat()
+  public static float anyFloat()
 ```
 
 任何float类型或非空(non-null)Float.
@@ -1314,9 +1314,9 @@ public static < T > Collection < T > anyCollectionOf(Class<T> clazz)
 * 0.
 
 <!--第十行-->
-##anyInt
+## anyInt
 ```java
-	public static int anyInt()
+  public static int anyInt()
 ```
 
 任何int或非空(non-null)Integer.
@@ -1328,7 +1328,7 @@ public static < T > Collection < T > anyCollectionOf(Class<T> clazz)
 * 0.
 
 <!--第十一行-->
-##anyList
+## anyList
 ```java
 public static List anyList()
 ```
@@ -1342,7 +1342,7 @@ public static List anyList()
 * 空List.
 
 <!--第十二行-->
-##anyListOf
+## anyListOf
 ```java
 public static < T >  List < T > anyListOf(Class< T > clazz)
 ```
@@ -1364,9 +1364,9 @@ public static < T >  List < T > anyListOf(Class< T > clazz)
 * 空List.
 
 <!--第十三行-->
-##anyLong
+## anyLong
 ```java
-	public static long anyLong()
+  public static long anyLong()
 ```
 
 任何long类型或非空(non-null)Long.<br><br>
@@ -1378,7 +1378,7 @@ public static < T >  List < T > anyListOf(Class< T > clazz)
 * 0.
 
 <!--第十四行-->
-##anyMap
+## anyMap
 ```java
 public static Map anyMap()
 ```
@@ -1392,7 +1392,7 @@ public static Map anyMap()
 * 空Map.
 
 <!--第十五行-->
-##anyMapOf
+## anyMapOf
 ```java
 public static < K,V> Map < K,V> anyMapOf(Class< K> keyClazz, Class< V> valueClazz)
 ```
@@ -1415,7 +1415,7 @@ public static < K,V> Map < K,V> anyMapOf(Class< K> keyClazz, Class< V> valueClaz
 * 空Map.
 
 <!--第十六行-->
-##anyObject
+## anyObject
 ```java
 public static < T> T anyObject()
 ```
@@ -1431,7 +1431,7 @@ public static < T> T anyObject()
 * empty null.
 
 <!--第十七行-->
-##anySet**
+## anySet**
 ```java
 public static <a href="http://docs.oracle.com/javase/8/docs/api/java/util/Set.html?is-external=true">Set</a> anySet()
 ```
@@ -1445,7 +1445,7 @@ public static <a href="http://docs.oracle.com/javase/8/docs/api/java/util/Set.ht
 * 空Set.
 
 <!--第十八行-->
-##anySetOf
+## anySetOf
 ```java
 public static < T> Set < T> anySetOf(Class< T> clazz)
 ```
@@ -1467,9 +1467,9 @@ public static < T> Set < T> anySetOf(Class< T> clazz)
 * 空Set.
 
 <!--第十九行-->
-##anyShort
+## anyShort
 ```java
-	public static short anyShort()
+  public static short anyShort()
 ```
 
 任何short类型或非空(non-null)Short.
@@ -1481,9 +1481,9 @@ public static < T> Set < T> anySetOf(Class< T> clazz)
 * 0.
 
 <!--第二十行-->
-##anyString
+## anyString
 ```java
-	public static String anyString()
+  public static String anyString()
 ```
 
 任何非空(non-null)String
@@ -1495,9 +1495,9 @@ public static < T> Set < T> anySetOf(Class< T> clazz)
 * 空String ("").
 
 <!--第二十一行-->
-##anyVararg
+## anyVararg
 ```java
-	public static < T> T anyVararg()
+  public static < T> T anyVararg()
 ```
 
 任何vararg类型, 即任何参数(arguments)的number和values
@@ -1506,18 +1506,18 @@ public static < T> Set < T> anySetOf(Class< T> clazz)
 
 ```java
 
-	//verification:
-	mock.foo(1, 2);
-	mock.foo(1, 2, 3, 4);
-	verify(mock, times(2)).foo(anyVararg());
+  //verification:
+  mock.foo(1, 2);
+  mock.foo(1, 2, 3, 4);
+  verify(mock, times(2)).foo(anyVararg());
 
-	//stubbing:
-	when(mock.foo(anyVararg()).thenReturn(100);
+  //stubbing:
+  when(mock.foo(anyVararg()).thenReturn(100);
 
-	//prints 100
-	System.out.println(mock.foo(1, 2));
-	//also prints 100<
-	System.out.println(mock.foo(1, 2, 3, 4));
+  //prints 100
+  System.out.println(mock.foo(1, 2));
+  //also prints 100<
+  System.out.println(mock.foo(1, 2, 3, 4));
 
 ```
 
@@ -1528,7 +1528,7 @@ public static < T> Set < T> anySetOf(Class< T> clazz)
 * null.
 
 <!--第二十二行-->
-##argThat
+## argThat
 ```java
 public static < T> T argThat(ArgumentMatcher < T> matcher)
 ```
@@ -1550,7 +1550,7 @@ public static < T> T argThat(ArgumentMatcher < T> matcher)
 * null.
 
 <!--第二十三行-->
-##booleanThat
+## booleanThat
 ```java
 public static boolean booleanThat(ArgumentMatcher < Boolean> matcher)
 ```
@@ -1567,7 +1567,7 @@ public static boolean booleanThat(ArgumentMatcher < Boolean> matcher)
 * false.
 
 <!--第二十四行-->
-##byteThat
+## byteThat
 ```java
 public static byte byteThat(ArgumentMatcher < Byte> matcher)
 ```
@@ -1585,7 +1585,7 @@ public static byte byteThat(ArgumentMatcher < Byte> matcher)
 * 0.
 
 <!--第二十五行-->
-##charThat
+## charThat
 ```java
 public static char charThat(ArgumentMatcher < Character> matcher)
 ```
@@ -1606,7 +1606,7 @@ public static char charThat(ArgumentMatcher < Character> matcher)
 
 ## contains
 ```java
-	public static String contains(String substring)
+  public static String contains(String substring)
 ```
 
 String参数包含给定的substring字符串.
@@ -1621,7 +1621,7 @@ String参数包含给定的substring字符串.
 
 * 空String ("").
 
-##description函数
+## description函数
 
 `public static VerificationMod description(String description)`
 
@@ -1647,7 +1647,7 @@ verify(mock, description("This will print on failure")).someMethod("some arg");
 
 ---
 
-##doAnswer函数
+## doAnswer函数
 
 `public static Stubber doAnswer(Answer answer)`
 
@@ -1678,7 +1678,7 @@ doAnswer(new Answer() {
 
 ---
 
-##doCallRealMethod函数
+## doCallRealMethod函数
 
 `public static Stubber doCallRealMethod()`
 
@@ -1714,7 +1714,7 @@ Foo mock = mock(Foo.class);
 
 ---
 
-##doNothing函数
+## doNothing函数
 
 `public static Stubber doNothing()`
 
@@ -1765,7 +1765,7 @@ stubber - 测试方法的测试桩
 
 
 
-##doReturn函数
+## doReturn函数
 
 `public static Stubber doReturn(Object toBeReturned)`
 
@@ -1822,7 +1822,7 @@ stubber - 测试方法的测试桩
 
 ---
 
-##doThrow函数
+## doThrow函数
 
 `public static Stubber doThrow(Class<? extends Throwable> toBeThrown)`
 
@@ -1850,7 +1850,7 @@ doThrow(RuntimeException.class).when(mock).someVoidMethod();
 
 ---
 
-##doThrow函数
+## doThrow函数
 
 `public static Stubber doThrow(Throwable toBeThrown)`
 
@@ -1878,7 +1878,7 @@ doThrow(RuntimeException.class).when(mock).someVoidMethod();
 
 ---
 
-##ignoreStubs函数
+## ignoreStubs函数
 
 `public static Object[] ignoreStubs(Object... mocks)`
  
@@ -1966,7 +1966,7 @@ List list = mock(List.class);
 ---
 
 
-##inOrder函数
+## inOrder函数
 
 `public static InOrder inOrder(Object... mocks)`
 
@@ -1998,7 +1998,7 @@ in order中被用于验证的InOrder对象
 
 ---
 
-##mock函数
+## mock函数
 
 `public static <T> T mock(Class <T> classToMock)`
 
@@ -2015,7 +2015,7 @@ mock对象
 
 ---
 
-##mock函数
+## mock函数
 
 `public static <T> T mock(Class <T> classToMock, Answer defaultAnswer)`
 
@@ -2045,7 +2045,7 @@ mock对象
 
 ---
 
-##mock函数
+## mock函数
 
 `public static <T> T mock(Class <T> classToMock, MockSettings mockSettings)`
  
@@ -2079,7 +2079,7 @@ Listener mock = mock(Listener.class, withSettings()
 
 ---
 
-##mock
+## mock
 
 @Deprecated
 
@@ -2116,7 +2116,7 @@ Foo mockTwo = mock(Foo.class, new YourOwnReturnValues());
 
 * mock对象
 
-##mock
+## mock
 
 `public static <T> T mock(Class <T> classToMock, String name)`
 
@@ -2162,7 +2162,7 @@ Foo mockTwo = mock(Foo.class, new YourOwnReturnValues());
 
 # n-w开头的函数
 
-##  never()函数
+## never()函数
 
 `public static VerificationMode never()`   
 
@@ -2181,7 +2181,7 @@ verify(mock, never()).someMethod();
 
 * 验证模式
 
-##  only()函数
+## only()函数
 
  `public static VerificationMode only()`  
 
@@ -2207,7 +2207,7 @@ verify(mock, never()).someMethod();
 * verification mode 
 
 
-##  reset(T... mocks)函数
+## reset(T... mocks)函数
 
 `public static <T> void reset(T... mocks)`
 
@@ -2242,7 +2242,7 @@ verify(mock, never()).someMethod();
 * 被重置的mocks
 
 
-##  spy(Class<T> classToSpy)函数
+## spy(Class<T> classToSpy)函数
 
 `@Incubating 
 public static <T> T spy(Class<T> classToSpy)`
@@ -2291,7 +2291,7 @@ public static <T> T spy(Class<T> classToSpy)`
 * 1.10.12
 
 
-##  stub(T methodCall)函数
+## stub(T methodCall)函数
 
 `public static <T> DeprecatedOngoingStubbing<T> stub(T methodCall)`
 
@@ -2329,7 +2329,7 @@ public static <T> T spy(Class<T> classToSpy)`
    //替代为：
    stub(mock.count()).toReturn(10);
 
-	//你可以这样做：
+  //你可以这样做：
    //You can do:
    when(mock.count()).thenReturn(10);
 ```
@@ -2352,15 +2352,15 @@ public static <T> T spy(Class<T> classToSpy)`
 * DeprecatedOngoingStubbing 对象是用来设置测试桩的值或者异常的
 
 
-##  stubVoid(T mock)函数
+## stubVoid(T mock)函数
 
  `public static <T> VoidMethodStubbable<T> stubVoid(T mock)` 
 
 已废弃.使用`doThrow(Throwable)`方法代替去打空测试桩
 
 ```
-	//Instead of:
-	//替代为：
+  //Instead of:
+  //替代为：
    stubVoid(mock).toThrow(e).on().someVoidMethod();
 
    //Please do:
@@ -2397,7 +2397,7 @@ public static <T> T spy(Class<T> classToSpy)`
 * stubbable object that allows stubbing with throwable
 
 
-##  timesout(long millis)函数
+## timesout(long millis)函数
 
 `public static VerificationWithTimeout timeout(long millis)`
 
@@ -2445,7 +2445,7 @@ public static <T> T spy(Class<T> classToSpy)`
 * 验证模式 
 
 
-##  time(int wantedNumberOfInvocations)函数
+## time(int wantedNumberOfInvocations)函数
 
 `public static VerificationMode times(int wantedNumberOfInvocations)`
 
@@ -2538,7 +2538,7 @@ verify(mock, times(2)).someMethod("some arg");
 * mock本身
 
 
-##  verifyNoMoreInteractions(Object... mocks)函数
+## verifyNoMoreInteractions(Object... mocks)函数
  
 `public static void verifyNoMoreInteractions(Object... mocks)`
 
@@ -2575,7 +2575,7 @@ verify(mock, times(2)).someMethod("some arg");
 * mocks - 被验证的
 
 
-##  verifyZeroInteractions(Object... mocks)函数
+## verifyZeroInteractions(Object... mocks)函数
 `public static void verifyZeroInteractions(Object... mocks)`
  
 传进来的mocks之间没有任何交互。
@@ -2661,7 +2661,7 @@ verify(mock, times(2)).someMethod("some arg");
 * 通常是`OngoingStubbing`对象。不要为被返回的对象创建一个引用。
 
 
-##  withSettings()函数
+## withSettings()函数
 
 `public static MockSettings withSettings()`
 
