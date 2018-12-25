@@ -977,73 +977,73 @@ Mockito 现在提供一个 JUnit rule。目前为止，有两种方法可以初�
 ```
 
 <b id="36"></b>
-### 36. Java8 Lambda匹配器的支持 (Since 2.1.0)
+### 36. Java 8 Lambda匹配器的支持 (Since 2.1.0)
 
-You can use Java 8 lambda expressions with ArgumentMatcher to reduce the dependency on ArgumentCaptor. If you need to verify that the input to a function call on a mock was correct, then you would normally use the ArgumentCaptor to find the operands used and then do subsequent assertions on them. While for complex examples this can be useful, it's also long-winded.
+你可以在参数匹配器([ArgumentMatcher][ArgumentMatcher])上使用Java 8 lambda表达式，来减少对参数捕获器(ArgumentCaptor)的依赖。如果你需要验证，mock对象上方法调用的输入是正确的，那么你需要正常使用参数捕获器来找到使用过的操作数，并且之后对它们做断言。对于复杂的例子这是有用的，当然它也很啰嗦。
 
-Writing a lambda to express the match is quite easy. The argument to your function, when used in conjunction with argThat, will be passed to the ArgumentMatcher as a strongly typed object, so it is possible to do anything with it.
+写一个lambda来表示匹配关系是很容易的。你方法的参数使用argThat进行连接时，将作为强类型对象传给参数匹配器，所以通过这种方式能做任何事情。
 
-Examples:
-
+例如:
 ```java
- // verify a list only had strings of a certain length added to it
- // note - this will only compile under Java 8
+ // 验证一个list只添加了某些长度的字符串(字符串长度小于5)
+ // 注意 - 这种写法只有在Java 8下能编译通过
  verify(list, times(2)).add(argThat(string -> string.length() < 5));
 
- // Java 7 equivalent - not as neat
+ // Java 7 等效的 - 不太整洁
  verify(list, times(2)).add(argThat(new ArgumentMatcher(){
      public boolean matches(String arg) {
          return arg.length() < 5;
      }
  }));
 
- // more complex Java 8 example - where you can specify complex verification behaviour functionally
+ // Java 8 下，更复杂的例子 - 你可以通过函数式指定复杂的验证行为
  verify(target, times(1)).receiveComplexObject(argThat(obj -> obj.getSubObject().get(0).equals("expected")));
 
- // this can also be used when defining the behaviour of a mock under different inputs
+ // lambda的方式也可以被用到：定义不同入参下，mock对象的行为
  // in this case if the input list was fewer than 3 items the mock returns null
  when(mock.someMethod(argThat(list -> list.size()<3))).thenReturn(null);
 ```
 
+[ArgumentMatcher]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/ArgumentMatcher.html
 
 <b id="37"></b>
-### 37. Java8 自定义Answer的支持 (Since 2.1.0)
+### 37. Java 8 自定义Answer的支持 (Since 2.1.0)
 
-As the Answer interface has just one method it is already possible to implement it in Java 8 using a lambda expression for very simple situations. The more you need to use the parameters of the method call, the more you need to typecast the arguments from InvocationOnMock.
+Answer接口只有一个方法，Java 8 使用lambda表达式来实现它非常简单。你越需要使用方法调用的参数，就越需要对InvocationOnMock的参数进行类型转换。
 
-Examples:
+例如:
 ```java
 
- // answer by returning 12 every time
+ // answer每次都返回12
  doAnswer(invocation -> 12).when(mock).doSomething();
 
- // answer by using one of the parameters - converting into the right
- // type as your go - in this case, returning the length of the second string parameter
- // as the answer. This gets long-winded quickly, with casting of parameters.
+ // 用参数里的一个值作为返回值 - 转换成你想要的正确类型 
+ //- 在这个例子里，把第二个字符串类型的参数的长度，作为返回值。
+ //随着参数的增长，这很快就会变得冗长。
  doAnswer(invocation -> ((String)invocation.getArgument(1)).length())
      .when(mock).doSomething(anyString(), anyString(), anyString());
 ```
 
-For convenience it is possible to write custom answers/actions, which use the parameters to the method call, as Java 8 lambdas. Even in Java 7 and lower these custom answers based on a typed interface can reduce boilerplate. In particular, this approach will make it easier to test functions which use callbacks. The methods answer and answerVoid can be used to create the answer. They rely on the related answer interfaces in org.mockito.stubbing that support answers up to 5 parameters.
-Examples:
+方便起见，现在我们可以定义这样的answer/actions，用被调用方法的参数作为answer/actions中lambda的入参。即使在Java 7和更低版本，自定义基于类型化接口的answers能减少样板代码。在特定场景，这种方法使测试使用了回调的方法更加容易。answer() 和 answerVoid()方法可以创建answer对象。它们依赖的相关answer接口在org.mockito.stubbing包下，Answer接口最多支持5个参数。
+
+例如:
 ```java
 
- // Example interface to be mocked has a function like:
+ //例如，将要被模拟的接口有一个这样的方法:
  void execute(String operand, Callback callback);
 
- // the example callback has a function and the class under test
- // will depend on the callback being invoked
+ //这个例子的回调函数有一个方法，测试类会依赖这个回调的执行
  void receive(String item);
 
  // Java 8 - style 1
  doAnswer(AdditionalAnswers.answerVoid((operand, callback) -> callback.receive("dummy"))
      .when(mock).execute(anyString(), any(Callback.class));
 
- // Java 8 - style 2 - assuming static import of AdditionalAnswers
+ // Java 8 - style 2 - 假设AdditionAnswers已经静态导入
  doAnswer(answerVoid((String operand, Callback callback) -> callback.receive("dummy"))
      .when(mock).execute(anyString(), any(Callback.class));
 
- // Java 8 - style 3 - where mocking function to is a static member of test class
+ // Java 8 - style 3 - 被模拟的方法是测试类的静态成员
  private static void dummyCallbackImpl(String operation, Callback callback) {
      callback.receive("dummy");
  }
@@ -1057,13 +1057,12 @@ Examples:
          callback.receive("dummy");
      }})).when(mock).execute(anyString(), any(Callback.class));
 
- // returning a value is possible with the answer() function
- // and the non-void version of the functional interfaces
- // so if the mock interface had a method like
+ // 用answer() 方法返回一个值是可能的，
+ // 并且有返回值版本的函数式接口也是如此，
+ // 如果模拟的接口有一个这样的方法:
  boolean isSameString(String input1, String input2);
 
- // this could be mocked
- // Java 8
+ // Java 8 - 这种方式是可以被模拟的
  doAnswer(AdditionalAnswers.answer((input1, input2) -> input1.equals(input2))))
      .when(mock).execute(anyString(), anyString());
 
@@ -1073,7 +1072,6 @@ Examples:
          return input1 + input2;
      }})).when(mock).execute(anyString(), anyString());
 ```
-
 
 <b id="38"></b>
 ### 38. 元数据和泛型信息保留 (Since 2.1.0)
