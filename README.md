@@ -134,7 +134,7 @@ Mockito库能够Mock对象、验证结果以及打桩(stubbing)。
 
 
 <b id="3"></b>
-### 3. [参数匹配器 (matchers)]()
+### 3. 参数匹配器 (matchers)
 
 Mockito以自然的java风格来验证参数值: 使用equals()函数。有时，当需要额外的灵活性时你可能需要使用参数匹配器，也就是argument matchers :
 
@@ -185,7 +185,7 @@ verify(mock).someMethod(anyInt(), anyString(), "third argument");
 像anyObject(), eq()这样的匹配器函数不会返回匹配器。它们会在内部将匹配器记录到一个栈当中，并且返回一个假的值，通常为null。`这样的实现是由于被Java编译器强加的静态类型安全`。结果就是你不能在验证或者测试桩函数之外使用anyObject(), eq()函数。
 
 <b id="4"></b>
-### 4. [验证函数的确切、最少、从未调用次数]()
+### 4. 验证函数的确切、最少、从未调用次数
 
 ```java
  //using mock
@@ -223,7 +223,7 @@ verify(mock).someMethod(anyInt(), anyString(), "third argument");
 verify函数默认验证的是执行了times(1)，也就是某个测试函数是否执行了1次.因此，times(1)通常被省略了。
 
 <b id="5"></b>
-### 5. [为返回值为void的函数通过Stub抛出异常]()
+### 5. 为返回值为void的函数通过Stub抛出异常
 
 ```java
 doThrow(new RuntimeException()).when(mockedList).clear();
@@ -239,7 +239,7 @@ mockedList.clear();
 
 
 <b id="6"></b>
-### 6. [验证执行执行顺序]()
+### 6. 验证执行执行顺序
 
 ```java
  // A. Single mock whose methods must be invoked in a particular order
@@ -285,7 +285,7 @@ mockedList.clear();
 
 
 <b id="7"></b>
-### 7. [确保交互(interaction)操作不会执行在mock对象上]()
+### 7. 确保交互(interaction)操作不会执行在mock对象上
 
 ```java
  //using mocks - only mockOne is interacted
@@ -326,7 +326,7 @@ verifyNoMoreInteractions(mockedList);
 
 
 <b id="9"></b>
-### 9. [简化mock对象的创建]()
+### 9. 简化mock对象的创建
 
 * 最小化重复的创建代码
 * 使测试类的代码可读性更高
@@ -356,7 +356,7 @@ public class ArticleManagerTest {
 
 
 <b id="10"></b>
-### 10. [为连续的调用做测试桩 (stub) ]()
+### 10. 为连续的调用做测试桩 (stub)
 
 有时我们需要为同一个函数调用的不同的返回值或异常做测试桩。典型的运用就是使用mock迭代器。
 原始版本的Mockito并没有这个特性，例如，可以使用Iterable或者简单的集合来替换迭代器。这些方法提供了更自然的方式，在一些场景中为连续的调用做测试桩会很有用。示例如下 ： 
@@ -388,7 +388,7 @@ public class ArticleManagerTest {
 ```
 
 <b id="11"></b>
-### 11. [为回调做测试桩]()
+### 11. 为回调做测试桩
 
 Allows stubbing with generic Answer interface.
 运行为泛型接口Answer打桩。
@@ -410,7 +410,7 @@ Allows stubbing with generic Answer interface.
 ```
 
 <b id="12"></b>
-### 12. [doReturn()、doThrow()、doAnswer()、doNothing()、doCallRealMethod()系列方法的运用]()
+### 12. doReturn()、doThrow()、doAnswer()、doNothing()、doCallRealMethod()系列方法的运用
 
 通过`when(Object)`为无返回值的函数打桩有不同的方法,因为编译器不喜欢void函数在括号内...
 
@@ -445,7 +445,7 @@ mockedList.clear();
 
 
 <b id="13"></b>
-### 13. [监控真实对象]()
+### 13. 监控真实对象
 
 你可以为真实对象创建一个监控(spy)对象。当你使用这个spy对象时真实的对象也会也调用，除非它的函数被stub了。尽量少使用spy对象，使用时也需要小心形式，例如spy对象可以用来处理遗留代码。
 
@@ -500,7 +500,7 @@ Mockito并不会为真实对象代理函数调用，实际上它会拷贝真实�
 因此结论就是 : 当你在监控一个真实对象时，你想在stub这个真实对象的函数，那么就是在自找麻烦。或者你根本不应该验证这些函数。
 
 <b id="14"></b>
-### 14. [修改没有测试桩的调用的默认返回值 ( 1.7版本之后 ) ]()
+### 14. 修改没有测试桩的调用的默认返回值 ( 1.7版本之后 )
 
 你可以指定策略来创建mock对象的返回值。这是一个高级特性，通常来说，你不需要写这样的测试。然后，它对于遗留系统来说是很有用处的。当你不需要为函数调用打桩时你可以指定一个默认的answer。
 
