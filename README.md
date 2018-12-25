@@ -1119,35 +1119,35 @@ Mockito 现在对模拟final类和方法提供一个孵化的，可选的的支�
 <b id="40"></b>
 ### 40. “严格的”Mocktio能提高生产效率并使测试用例更清晰(2.+版本之后)
 
-To quickly find out how "stricter" Mockito can make you more productive and get your tests cleaner, see:
-- Strict stubbing with JUnit Rules - MockitoRule.strictness(Strictness) with Strictness.STRICT_STUBS
-- Strict stubbing with JUnit Runner - MockitoJUnitRunner.StrictStubs
-- Strict stubbing if you cannot use runner/rule (like TestNG) - MockitoSession
-- Unnecessary stubbing detection with MockitoJUnitRunner
-- Stubbing argument mismatch warnings, documented in MockitoHint
+为什么“严格的”Mockito能使你的生产率更好，并使你的测试更整洁，看:
+- 通过JUnit Rules来开启严格打桩 - MockitoRule.strictness(Strictness) with Strictness.STRICT_STUBS
+- 通过Junit Runner来开启严格打桩 - MockitoJUnitRunner.StrictStubs
+- 如果你不能使用runner/rule(例如使用TestNG)来开启严格打桩 - MockitoSession
+- 通过MockitoJUnitRunner发现非必要测试桩
+- 打桩参数不匹配的警告，记录在MockitoHint中
 
-Mockito is a "loose" mocking framework by default. Mocks can be interacted with without setting any expectations beforehand. This is intentional and it improves the quality of tests by forcing users to be explicit about what they want to stub / verify. It is also very intuitive, easy to use and blends nicely with "given", "when", "then" template of clean test code. This is also different from the classic mocking frameworks of the past, they were "strict" by default.
+Mockito默认是一个“宽松的”模拟框架。mock对象可以做交互，而不用事先做设置期望的动作。这是有意的，它通过强制用户明确地表达他们想要 打桩/验证的内容来提高测试的质量。它也非常直观的，易于使用，并且合“given”，“when”，“then”整洁的测试代码模板完美融合在一起。这也是区别于过去的经典模拟框架，过去的框架默认都是严格的。
 
-Being "loose" by default makes Mockito tests harder to debug at times. There are scenarios where misconfigured stubbing (like using a wrong argument) forces the user to run the test with a debugger. Ideally, tests failures are immediately obvious and don't require debugger to identify the root cause. Starting with version 2.1 Mockito has been getting new features that nudge the framework towards "strictness". We want Mockito to offer fantastic debuggability while not losing its core mocking style, optimized for intuitiveness, explicitness and clean test code.
+默认是“宽松的”，有时让Mockito的测试用例难于被debug。有些情况下，配置错误的打桩强制用户使用调试器执行测试用例。理想状况下，测试用例失败是显而易见的结果，并且不需要调试器来定位根本原因。从2.1版本开始，Mockito拥有一些新的特性，这些特性推动框架走向“严格性”。我们想让Mockito提供出色的调试能力，同时也不丢失它核心的模拟风格，针对直观性，清晰性和整洁的测试代码进行优化。
 
-Help Mockito! Try the new features, give us feedback, join the discussion about Mockito strictness at GitHub issue 769.
+帮助 Mockito！尝试这些新的特性，给我们反馈，加入GitHub issue 769关于Mockito严格性的讨论。
 
 <b id="41"></b>
 ### 41. 框架集成的高级公开API (2.10.+版本之后)
 
-In Summer 2017 we decided that Mockito should offer better API for advanced framework integrations. The new API is not intended for users who want to write unit tests. It is intended for other test tools and mocking frameworks that need to extend or wrap Mockito with some custom logic. During the design and implementation process (issue 1110) we have developed and changed following public API elements:
+在2017的夏天，我们觉得Mockito应该为高级框架集成提供更好的API。这个新的API不是为了写单元测试的用户。它旨在用于需要用一些定制逻辑扩展或包装Mockito的其他测试工具和模拟框架。在设计期间和实现过程中(issue 1110)，我们开发和改变了下列公开API的元素：
 
-- New MockitoPlugins - Enables framework integrators to get access to default Mockito plugins. Useful when one needs to implement custom plugin such as MockMaker and delegate some behavior to the default Mockito implementation.
-- New MockSettings.build(Class) - Creates immutable view of mock settings used later by Mockito. Useful for creating invocations with InvocationFactory or when implementing custom MockHandler.
-- New MockingDetails.getMockHandler() - Other frameworks may use the mock handler to programmatically simulate invocations on mock objects.
-- New MockHandler.getMockSettings() - Useful to get hold of the setting the mock object was created with.
-- New InvocationFactory - Provides means to create instances of Invocation objects. Useful for framework integrations that need to programmatically simulate method calls on mock objects.
-- New MockHandler.getInvocationContainer() - Provides access to invocation container object which has no methods (marker interface). Container is needed to hide the internal implementation and avoid leaking it to the public API.
-- Changed Stubbing - it now extends Answer interface. It is backwards compatible because Stubbing interface is not extensible (see NotExtensible). The change should be seamless to our users.
-- Deprecated InternalMockHandler - In order to accommodate API changes we needed to deprecate this interface. The interface was always documented as internal, we don't have evidence it was used by the community. The deprecation should be completely seamless for our users.
-- NotExtensible - Public annotation that indicates to the user that she should not provide custom implementations of given type. Helps framework integrators and our users understand how to use Mockito API safely.
+- 新的 MockitoPlugins - 使框架集成者能够访问默认的Mockito插件。当需要实现自定义插件(例如MockMaker)，并且将某些行为委托给默认Mockito的实现。
+- 新的 MockSettings.build(Class) - 创建模拟配置的不可变的视图，供Mockito稍后使用。使用InvocationFactory创建invocations 或 当实现自定义MockHandler时，视图将非常有用。
+- 新的 MockingDetails.getMockHandler() - 其他框架可能使用这个mock处理器，以编程方式对mock对象模拟调用。
+- 新的 MockHandler.getMockSettings() - 用于获取创建模拟对象的配置。
+- 新的 InvocationFactory - 提供创建调用对象实例的方法。有益于需要以编程方式模拟在mock对象上的方法调用的框架集成。
+- 新的 MockHandler.getInvocationContainer() - 提供获取没有方法的调用容器对象(makrer接口)。容器需要隐藏它内部的实现机制，并且避免将其泄露给公共API。
+- 改变Stubbing接口 - Stubbing现在继承自 Answer 接口。它是向后兼容的，因为Stubbing接口不是一个可扩展的(看@NotExtensible注解)。这个改变对用户来说是无感的。
+- InternalMockHandler标记为过期的 - 为了适应API变化，我们需要标记这个接口成过期的。这个接口一直记录为内部的，我们没有证据证明它被社区使用。这个弃用行为应该对用户完成无感。
+- NotExtensible - 公共的注释，指示用户不应该对提供给定类型的自定义实现。帮助框架集成者和我们的用户理解怎么去安全的使用Mockito API。
 
-Do you have feedback? Please leave comment in issue 1110.
+你有反馈吗？请在issue 1110里留言。
 
 <b id="42"></b>
 ### 42. 集成新的API: 监听验证开始(verification start)事件(2.11.+版本之后)
