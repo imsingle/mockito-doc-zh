@@ -306,7 +306,7 @@ mockedList.clear();
 ```
 
 <b id="8"></b>
-### 8. [查找冗余的调用]()
+### 8. 查找冗余的调用
 
 ```java
 //using mocks
@@ -792,7 +792,7 @@ Mock 的 delegates 相对于标准的 spy 来说功能弱了很多，不过在�
 ---
 
 <b id="28"></b>
-###28. [MockMaker API ][mock_maker_plugin](Since 1.9.5)
+### 28. [MockMaker API ][mock_maker_plugin](Since 1.9.5)
 
 为了满足用户的需求和 Android 平台使用。Mockito 现在提供一个扩展点，允许替换代理生成引擎。默认情况下，Mockito 使用 cglib 创建动态代理。
 
@@ -807,7 +807,7 @@ Mock 的 delegates 相对于标准的 spy 来说功能弱了很多，不过在�
 
 ---
 <b id="29"></b>
-###29. [(new) BDD 风格的验证][BDD_behavior_verification] (Since 1.10.0)
+### 29. [(new) BDD 风格的验证][BDD_behavior_verification] (Since 1.10.0)
 
 开启 Behavior Driven Development (BDD) 风格的验证可以通过 BBD 的关键词 **then** 开始验证。
 
@@ -832,7 +832,7 @@ Mock 的 delegates 相对于标准的 spy 来说功能弱了很多，不过在�
 
 
 <b id="30"></b>
-###30. [(new) Spying 或 mocking 抽象类][spying_abstract_classes] (Since 1.10.12)
+### 30. [(new) Spying 或 mocking 抽象类][spying_abstract_classes] (Since 1.10.12)
 
 现在可以方便的 spy 一个抽象类。注意，过度使用 spy 或许意味着代码的设计上有问题。(see [spy(Object)][spy]).
 
@@ -864,7 +864,7 @@ Mock 的 delegates 相对于标准的 spy 来说功能弱了很多，不过在�
 
 
 <b id="31"></b>
-###31. [(new) Mockito mocks 可以通过 classloaders 序列化/反序列化][serilization_across_classloader] (Since 1.10.0)
+### 31. [(new) Mockito mocks 可以通过 classloaders 序列化/反序列化][serilization_across_classloader] (Since 1.10.0)
 
  Mockito 通过 classloader 引入序列化。和其他形式的序列化一样，所有 mock 层的对象都要被序列化，
  包括 answers。因为序列化模式需要大量的工作，所以这是一个可选择设置。
@@ -886,7 +886,7 @@ Mock 的 delegates 相对于标准的 spy 来说功能弱了很多，不过在�
  ---
 
 <b id="32"></b>
-###32. [(new) Deep stubs 更好的泛型支持][better_generic_support_with_deep_stubs] (Since 1.10.0)
+### 32. [(new) Deep stubs 更好的泛型支持][better_generic_support_with_deep_stubs] (Since 1.10.0)
 
  Deep stubbing 现在可以更好的查找类的泛型信息。这就意味着像这样的类
  不必去 mock 它的行为就可以使用。
@@ -910,7 +910,7 @@ class Lines extends List<Line> {
  ---
 
 <b id="33"></b>
-###33.  [(new) Mockito JUnit rule][mockito_junit_rule] (Since 1.10.17)
+### 33.  [(new) Mockito JUnit rule][mockito_junit_rule] (Since 1.10.17)
 
 
 Mockito 现在提供一个 JUnit rule。目前为止，有两种方法可以初始化 fields ，使用 Mockito 提供的注解比如
@@ -943,7 +943,7 @@ Mockito 现在提供一个 JUnit rule。目前为止，有两种方法可以初�
  ---
 
 <b id="34"></b>
-###34. [(new) 开启和关闭 plugins][PluginSwitch] (Since 1.10.15)
+### 34. [(new) 开启和关闭 plugins][PluginSwitch] (Since 1.10.15)
 
 这是一个测试特性，可以控制一个 mockito-plugin 开启或者关闭。详情请查看 [PluginSwitch][PluginSwitch]
 
@@ -953,7 +953,7 @@ Mockito 现在提供一个 JUnit rule。目前为止，有两种方法可以初�
 ---
 
 <b id="35"></b>
-###35. 自定义验证失败信息 (Since 2.0.0)
+### 35. 自定义验证失败信息 (Since 2.0.0)
 
 允许声明一个在验证失败时输出的自定义消息
 示例:
