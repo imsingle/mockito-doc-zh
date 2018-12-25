@@ -583,12 +583,13 @@ assertEquals("John", argument.getValue().getName());
 
 ### 19.行为驱动开发的别名 (1.8版本之后)
 
-行为驱动开发实现测试单元的模式将 //given //when //then comments 视作测试方法的基础，这也是我们实现单元测试时被建议做的！
+行为驱动开发实现测试单元的模式将 //given //when //then 注释视作测试方法的基础，这也是我们实现单元测试也建议你去做的！
 
 [你可以在这开始学习有关 BDD 的知识](http://en.wikipedia.org/wiki/Behavior_Driven_Development)
 
-问题是当信息没有很好地与 //given //when //then comments 交互时，扮演规范角色的测试桩 API 就会出现问题。这是因为测试桩属于给定测试单元的组件，而且不是任何测试的组件。因此 [BDDMockito](http://site.mockito.org/mockito/docs/current/org/mockito/BDDMockito.html) 类介绍了一个别名，使你的测试桩方法调用 [BDDMockito.given(Object)](http://site.mockito.org/mockito/docs/current/org/mockito/BDDMockito.html#given(T)) 方法。现在它可以很好地和给定的 BDD 模式的测试单元组件进行交互。
+问题是：当前打桩API中，‘when’的规范角色没有很好的集成到//given //when //then注释中。这是因为测试打桩属于测试中的given部分，而且不是测试中的when部分。因此 [BDDMockito](http://site.mockito.org/mockito/docs/current/org/mockito/BDDMockito.html) 类介绍了一个别名，使你的测试桩方法调用 [BDDMockito.given(Object)](http://site.mockito.org/mockito/docs/current/org/mockito/BDDMockito.html#given(T)) 方法。现在它可以很好地和BDD风格的测试中的given部分进行交互。
 
+测试用例看起来会是这样子:
 ```java
  import static org.mockito.BDDMockito.*;
 
@@ -609,24 +610,21 @@ assertEquals("John", argument.getValue().getName());
 
 <b id="20"></b>
 
-### 20. 序列化mock对象
+### 20. 可序列化的mocks(1.8.1版本之后)
 
-模拟对象可以被序列化。有了这个特性你就可以在依赖被序列化的情况下使用模拟对象了。
+模拟对象是可以被序列化的。有了这个特性，你就可以在要求对象依赖的数据可序列化时，也能mock这个对象。
 
-警告：这个特性很少在单元测试中被使用。
+警告：这个特性应该在单元测试中少用。
 
+实现这个特性是为了DBB规范的一个特例：有一个不可靠的外部依赖。在web环境下，来自外部依赖的对象为了在不同层之间传递，会被序列化。
 
-To create serializable mock use [MockSettings.serializable()](http://site.mockito.org/mockito/docs/current/org/mockito/MockSettings.html#serializable()):
-
-这个特性通过 BDD 拥有不可考外部依赖的特性的具体用例实现，来自外部依赖的 Web 环境和对象会被序列化，然后在不同层之间被传递。
+用[MockSettings.serializable()](http://site.mockito.org/mockito/docs/current/org/mockito/MockSettings.html#serializable()):创建一个可序列化的mock对象:
 
 ```java
    List serializableMock = mock(List.class, withSettings().serializable());
 ```
 
-The mock can be serialized assuming all the normal [serialization requirements](http://java.sun.com/j2se/1.5.0/docs/api/java/io/Serializable.html) are met by the class.
-
-模拟对象能被序列化假设所有普通的序列化要求都被类满足了。
+模拟对象能被序列化假设所有普通的[序列化要求]((http://java.sun.com/j2se/1.5.0/docs/api/java/io/Serializable.html))都被类满足了。
 
 让一个真实的侦查对象可序列化需要多一些努力，因为 spy(...) 方法没有接收 MockSettings 的重载版本。不过不用担心，你几乎不可能用到这。
 
@@ -640,64 +638,62 @@ The mock can be serialized assuming all the normal [serialization requirements](
 
 <b id="21"></b>
 
-### 21. 新的注解 : @Captor,@Spy,@ InjectMocks (1.8.3版本之后)
+### 21. 新的注解 : @Captor,@Spy,@InjectMocks (1.8.3版本之后)
 
-V1.8.3 带来的新注解在某些场景下可能会很实用
+V1.8.3 带来的新注解在某些场景下可能会很实用:
 
-@[Captor](http://site.mockito.org/mockito/docs/current/org/mockito/Captor.html) 简化 [ArgumentCaptor](http://site.mockito.org/mockito/docs/current/org/mockito/ArgumentCaptor.html) 的创建 - 当需要捕获的参数是一个令人讨厌的通用类，而且你想避免编译时警告。
+@[Captor](http://site.mockito.org/mockito/docs/current/org/mockito/Captor.html) 简化 [ArgumentCaptor](http://site.mockito.org/mockito/docs/current/org/mockito/ArgumentCaptor.html) 的创建 - 当需要捕获的参数是一个令人讨厌的泛型类，而且你想避免编译时警告。
 
 @[Spy](http://site.mockito.org/mockito/docs/current/org/mockito/Spy.html) - 你可以用它代替 [spy(Object) 方法](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#spy(T))
 
-@[InjectMocks](http://site.mockito.org/mockito/docs/current/org/mockito/InjectMocks.html) - 自动将模拟对象或侦查域注入到被测试对象中。需要注意的是 @InjectMocks 也能与 @Spy 一起使用，这就意味着 Mockito 会注入模拟对象到测试的部分测试中。它的复杂度也是你应该使用部分测试原因。
+@[InjectMocks](http://site.mockito.org/mockito/docs/current/org/mockito/InjectMocks.html) - 自动将模拟或监视的对象注入到被测试对象中。需要注意的是 @InjectMocks 也能与 @Spy 一起使用，这就意味着 Mockito会在测试中，将mocks对象注入局部mock对象中。这变得很复杂，所以你还是应该少用局部mock。参考16点关于局部mock的介绍。
 
-所有新的注解仅仅在 [MockitoAnnotations.initMocks(Object)](http://site.mockito.org/mockito/docs/current/org/mockito/MockitoAnnotations.html#initMocks(java.lang.Object)) 方法中被处理，就像你在 built-in runner 中使用的 @[Mock](http://site.mockito.org/mockito/docs/current/org/mockito/Mock.html) 注解：[MockitoJUnitRunner](http://site.mockito.org/mockito/docs/current/org/mockito/runners/MockitoJUnitRunner.html) 或 规范: [MockitoRule](http://site.mockito.org/mockito/docs/current/org/mockito/junit/MockitoRule.html).
+所有新的注解都是只在MockitoAnnotations.initMocks(Object)被处理。就像@[Mock](http://site.mockito.org/mockito/docs/current/org/mockito/Mock.html)注解，你能用内置runner([MockitoJUnitRunner](http://site.mockito.org/mockito/docs/current/org/mockito/runners/MockitoJUnitRunner.html) 或 规则: [MockitoRule](http://site.mockito.org/mockito/docs/current/org/mockito/junit/MockitoRule.html))来开启。
+所有新的注解都是只在[MockitoAnnotations.initMocks(Object)]
 
 <b id="22"></b>
 
 ### 22. 验证超时 (1.8.5版本之后)
 
-允许带有暂停的验证。这使得一个验证去等待一段特定的时间，以获得想要的交互而不是如果还没有发生事件就带来的立即失败。在并发条件下的测试这会很有用。
+允许验证超时。这使得一个验证会等待一段特定的时间，以获得想要的交互，而不是还没有发生事件就立即失败(即超时时间到了才会失败)。在并发条件下的测试这会很有用。
 
-感觉起来这个特性应该很少被使用 - 指出更好的测试多线程系统的方法。
+这个特性应该很少被使用 - 指出更好的测试多线程系统的方法。
 
-还没有实现去和 InOrder 验证协作。
+还没有实现和 InOrder 验证协作。
 
 例子：
 
 ```java
-   //passes when someMethod() is called within given time span
+   //someMethod()执行时间不少于100ms才会结束
+   //校验通过时马上会马上结束(可能不会等到100ms)
    verify(mock, timeout(100)).someMethod();
-   //above is an alias to:
+   //上一行例子是下面这行代码的别名:
    verify(mock, timeout(100).times(1)).someMethod();
 
-   //passes when someMethod() is called *exactly* 2 times within given time span
+   //someMethod()在100ms内执行了2次就会马上通过
    verify(mock, timeout(100).times(2)).someMethod();
 
-   //passes when someMethod() is called *at least* 2 times within given time span
+   //等效: someMethod()在100ms内执行了2次就会马上通过
    verify(mock, timeout(100).atLeast(2)).someMethod();
-
-   //verifies someMethod() within given time span using given verification mode
-   //useful only if you have your own custom verification modes.
-   verify(mock, new Timeout(100, yourOwnVerificationMode)).someMethod();
 ```
 
 <b id="23"></b>
 
-### 23. 自动初始化被@Spies, @InjectMocks注解的字段以及构造函数注入 (1.9.0版本之后)
+### 23. 自动实例化被@Spies, @InjectMocks注解的字段以及构造函数注入 (1.9.0版本之后)
 
-Mockito 现在会通过注入构造方法、setter 或域注入尽可能初始化带有 @[Spy](http://site.mockito.org/mockito/docs/current/org/mockito/Spy.html) 和 @[InjectMocks](http://site.mockito.org/mockito/docs/current/org/mockito/InjectMocks.html) 注解的域或方法。
+Mockito 现在会通过构造器注入、setter注入 或字段注入方式，尽可能初始化带有 @[Spy](http://site.mockito.org/mockito/docs/current/org/mockito/Spy.html) 和 @[InjectMocks](http://site.mockito.org/mockito/docs/current/org/mockito/InjectMocks.html) 注解的字段。
 
 为了利用这一点特性，你需要使用 [MockitoAnnotations.initMocks(Object)](http://site.mockito.org/mockito/docs/current/org/mockito/MockitoAnnotations.html#initMocks(java.lang.Object)), [MockitoJUnitRunner](http://site.mockito.org/mockito/docs/current/org/mockito/runners/MockitoJUnitRunner.html) 或 [MockitoRule](http://site.mockito.org/mockito/docs/current/org/mockito/junit/MockitoRule.html)。
 
-为了 InjectMocks 请在 Java 文档中了解更多可用的技巧和注入的规范
+请在InjectMocks的javadoc查看更多的使用技巧和注入规范
 
 ```java
- //instead:
+ //旧的写法:
  @Spy BeerDrinker drinker = new BeerDrinker();
- //you can write:
+ //新的写法:
  @Spy BeerDrinker drinker;
 
- //same applies to @InjectMocks annotation:
+ //@InjectMocks注解也可以这么用:
  @InjectMocks LocalPub;
 ```
 
@@ -705,22 +701,22 @@ Mockito 现在会通过注入构造方法、setter 或域注入尽可能初始�
 
 ### 24. 单行测试桩 (1.9.0版本之后)
 
-Mockito 现在允许你在使用测试桩时创建模拟对象。基本上，它允许在一行代码中创建一个测试桩，这对保持代码的整洁很有用。举例来说，有些乏味的测试桩会被创建，并在测试初始化域时被打入，例如：
+Mockito 现在允许你在测试打桩时创建模拟对象。基本上，它允许通过一行代码来创建一个测试桩，这对保持代码的整洁很有用。举例来说，在测试字段初始化时，有些简单的测试桩可以被创建并赋值到该字段上，例如：
 
 ```java
  public class CarTest {
    Car boringStubbedCar = when(mock(Car.class).shiftGear()).thenThrow(EngineNotStarted.class).getMock();
 
-@Test public void should... {}
+ @Test public void should... {}
 ```
 
 <b id="25"></b>
 
 ### 25. 验证被忽略的测试桩 (1.9.0版本之后)
 
-Mockito 现在允许为了验证无视测试桩。在与 verifyNoMoreInteractions() 方法或验证 inOrder() 方法耦合时，有些时候会很有用。帮助避免繁琐的打入测试桩调用验证 - 显然我们不会对验证测试桩感兴趣。
+Mockito 现在允许为了验证而无视测试桩。在与 verifyNoMoreInteractions() 方法组合或验证 inOrder() 方法时，有些时候会很有用。帮助避免多余的测试桩调用校验 - 显然我们不会对验证测试桩感兴趣。
 
-警告，ignoreStubs() 可能会导致 verifyNoMoreInteractions(ignoreStubs(...)) 的过度使用。谨记在心，Mockito 没有推荐用 [verifyNoMoreInteractions()](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#verifyNoMoreInteractions(java.lang.Object...)) 方法连续地施用于每一个测试中，原因在 Java 文档中有。
+警告，ignoreStubs() 可能会导致 verifyNoMoreInteractions(ignoreStubs(...)) 的过度使用。谨记在心，Mockito 没有推荐用 [verifyNoMoreInteractions()](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#verifyNoMoreInteractions(java.lang.Object...)) 方法连续地施用于每一个测试中，原因在 [verifyNoMoreInteractions(Object...)](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#verifyNoMoreInteractions(java.lang.Object...))的Java 文档中有。
 
 一些例子：
 
@@ -728,10 +724,10 @@ Mockito 现在允许为了验证无视测试桩。在与 verifyNoMoreInteraction
  verify(mock).foo();
  verify(mockTwo).bar();
 
- //ignores all stubbed methods:
+ //忽略所有已经打桩的方法:
  verifyNoMoreInvocations(ignoreStubs(mock, mockTwo));
 
- //creates InOrder that will ignore stubbed
+ //创建 InOrder 将会忽略打桩信息
  InOrder inOrder = inOrder(ignoreStubs(mock, mockTwo));
  inOrder.verify(mock).foo();
  inOrder.verify(mockTwo).bar();
@@ -742,22 +738,36 @@ Mockito 现在允许为了验证无视测试桩。在与 verifyNoMoreInteraction
 
 <b id="26"></b>
 
-### 26. mock详情 (1.9.5版本之后)
+### 26. mock详情 (2.2.x中改进)
 
-为了区别一个对象是模拟对象还是侦查对象：
+Mockito 提供API来查看mock对象的详情。这些API对高级用户和mock框架整合者很有用。
 
 ```java
-     Mockito.mockingDetails(someObject).isMock();
-     Mockito.mockingDetails(someObject).isSpy();
+   //识别特定的对象是一个mock对象或者是spy对象:
+   Mockito.mockingDetails(someObject).isMock();
+   Mockito.mockingDetails(someObject).isSpy();
+
+   //获取mock对象的详情信息，包括它的类型或默认的answer:
+   MockingDetails details = mockingDetails(mock);
+   details.getMockCreationSettings().getTypeToMock();
+   details.getMockCreationSettings().getDefaultAnswer();
+
+   //获取mock对象的执行器(invocations)和打桩信息(stubbings):
+   MockingDetails details = mockingDetails(mock);
+   details.getInvocations();
+   details.getStubbings();
+
+   //打印所有的交互(including stubbing, unused stubs)
+   System.out.println(mockingDetails(mock).printInvocations());
 ```
 
-[MockingDetails.isMock()](http://site.mockito.org/mockito/docs/current/org/mockito/MockingDetails.html#isMock()) 和 [MockingDetails.isSpy()](http://site.mockito.org/mockito/docs/current/org/mockito/MockingDetails.html#isSpy()) 方法都会返回一个布尔值。因为一个侦查对象只是模拟对象的一种变种，所以 isMock() 方法在对象是侦查对象是会返回 true。在之后的 Mockito 版本中 MockingDetails 会变得更健壮，并提供其他与模拟对象相关的有用信息，例如：调用，测试桩信息，等等……
+更多信息请查看[MockingDetails](https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/MockingDetails.html)的java文档.
 
 
 <b id="27"></b>
-### 27. [委托调用真实实例][delegating_call_to_real_instance] (Since 1.9.5)
+### 27. [真实实例的委托调用][delegating_call_to_real_instance] (Since 1.9.5)
 
-当**使用常规的 spy API 去 mock 或者 spy 一个对象很困难**时可以用 delegate 来 spy 或者 mock 对象的某一部分。
+有用的间谍或局部mock的对象，有时用常规 spy API很难去mock或spy。
 从 Mockito 的 1.10.11 版本开始， delegate 有可能和 mock 的类型相同也可能不同。如果不是同一类型，
 delegate 类型需要提供一个匹配方法否则就会抛出一个异常。下面是关于这个特性的一些用例:
 
@@ -767,7 +777,7 @@ delegate 类型需要提供一个匹配方法否则就会抛出一个异常。�
 
 和常规 spy 的不同:
 
-- 标准的 spy [(spy(Object))][spy] 包含被 spy 实例的所有状态信息，方法在 spy 对象上被调用。被 spy 的对象只在 mock
+- 标准的 spy [(spy(Object))][spy] 包含被监视实例的所有状态信息，方法在 spy 对象上被调用。被监视的对象只在 mock
 创建时被用来拷贝状态信息。如果你通过标准 spy 调用一个方法，这个 spy 会调用其内部的其他方法记录这次操作，
 以便后面验证使用。等效于存根 (stubbed)操作。
 
@@ -784,24 +794,25 @@ Mock 的 delegates 相对于标准的 spy 来说功能弱了很多，不过在�
 ---
 
 <b id="28"></b>
-### 28. [MockMaker API ][mock_maker_plugin](Since 1.9.5)
+### 28. [MockMaker API][mock_maker_plugin](Since 1.9.5)
 
-为了满足用户的需求和 Android 平台使用。Mockito 现在提供一个扩展点，允许替换代理生成引擎。默认情况下，Mockito 使用 cglib 创建动态代理。
+为了满足用户的需求和 Android 平台使用。Mockito 现在提供一个扩展点，允许替换代理生成引擎。默认情况下，Mockito 使用 [Byte Buddy][byte_buddy] 创建动态代理。
 
-这个扩展点是为想要扩展 Mockito 功能的高级用户准备的。比如，我们现在就可以在 dexmaker 的帮助下使用 Mockito
+这个扩展点是为想要扩展 Mockito 功能的高级用户准备的。比如，我们现在就可以在 [dexmaker][dexmaker] 的帮助下使用 Mockito
 测试 Android。
 
 更多的细节，原因和示例请看 [MockMaker][MockMaker] 的文档。
 
-
 [mock_maker_plugin]:http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#mock_maker_plugin
 [MockMaker]:http://site.mockito.org/mockito/docs/current/org/mockito/plugins/MockMaker.html
+[byte_buddy]:https://github.com/raphw/byte-buddy
+[dexmaker]:https://github.com/crittercism/dexmaker
 
 ---
 <b id="29"></b>
-### 29. [(new) BDD 风格的验证][BDD_behavior_verification] (Since 1.10.0)
+### 29. [BDD 风格的验证][BDD_behavior_verification] (Since 1.10.0)
 
-开启 Behavior Driven Development (BDD) 风格的验证可以通过 BBD 的关键词 **then** 开始验证。
+开始验证时，通过使用**then**关键字，可以开启 Behavior Driven Development (BDD) 风格的验证。
 
 ```java
  given(dog.bark()).willReturn(2);
@@ -824,23 +835,30 @@ Mock 的 delegates 相对于标准的 spy 来说功能弱了很多，不过在�
 
 
 <b id="30"></b>
-### 30. [(new) Spying 或 mocking 抽象类][spying_abstract_classes] (Since 1.10.12)
+### 30. [Spying 或 mocking 抽象类][spying_abstract_classes] (1.10.12版本加入，在2.7.13 和 2.7.14版特征得到增强))
 
 现在可以方便的 spy 一个抽象类。注意，过度使用 spy 或许意味着代码的设计上有问题。(see [spy(Object)][spy]).
 
-之前，spying 只可以用在实例对象上。而现在新的 API 可以在创建一个 mock 实例时使用构造函数。这对 mock
+之前，spying 只可以用在实例对象上。而现在新的 API 可以使用构造函数来创建一个 mock 实例。这对 mock
 一个抽象类来说是很重要的，这样使用者就不必再提供一个抽象类的实例了。目前的话只支持无参构造函数，
 如果你认为这样还不够的话欢迎向我们反馈。
 
 ```java
-//convenience API, new overloaded spy() method:
+ //方便的API，新增重载的spy()方法:
  SomeAbstract spy = spy(SomeAbstract.class);
 
- //Robust API, via settings builder:
+ //模拟抽象方法，监视接口默认方法(只有在2.7.13后才可用)
+ Function function = spy(Function.class);
+
+ //健壮的 API，通过配置构造器:
  OtherAbstract spy = mock(OtherAbstract.class, withSettings()
     .useConstructor().defaultAnswer(CALLS_REAL_METHODS));
 
- //Mocking a non-static inner abstract class:
+ //模拟构造器带参数的抽象类(只有在2.7.14后才可用)
+ SomeAbstract spy = mock(SomeAbstract.class, withSettings()
+   .useConstructor("arg1", 123).defaultAnswer(CALLS_REAL_METHODS));
+
+ //模拟非静态内部抽象类:
  InnerAbstract spy = mock(InnerAbstract.class, withSettings()
     .useConstructor().outerInstance(outerInstance).defaultAnswer(CALLS_REAL_METHODS));
 
