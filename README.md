@@ -1195,7 +1195,7 @@ InstantiatorProvider返回了一个内部API。因此它被启用并且被Instan
 ```
 查阅lenient()更多的信息。开启一个GitHub的issue来讨论，让我们知道你是怎么发现这个新特性。
 
-###字段摘要
+### 字段摘要
 
 <table>
 <tbody>
@@ -1211,7 +1211,7 @@ InstantiatorProvider返回了一个内部API。因此它被启用并且被Instan
 </tbody>
 </table>
 
-###字段详情
+### 字段详情
 <table>
 <tbody>
 <tr>
@@ -1240,7 +1240,7 @@ partial mock是如果适应这种模式的呢？好吧！它不仅仅是，parti
 </tbody>
 </table>
 
-###方法摘要
+### 方法摘要
 <table>
   <tbody>
   <tr>
