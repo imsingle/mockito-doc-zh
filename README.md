@@ -1076,7 +1076,7 @@ Answer接口只有一个方法，Java 8 使用lambda表达式来实现它非常�
 <b id="38"></b>
 ### 38. 元数据和泛型信息保留 (Since 2.1.0)
 
-Mockito now preserves annotations on mocked methods and types as well as generic meta data. Previously, a mock type did not preserve annotations on types unless they were explicitly inherited and never retained annotations on methods. As a consequence, the following conditions now hold true:
+Mockito 现在会保留mock方法和类上的注解信息，也会保留泛型的元信息。以前，mock类型不保存类上的注解信息除非注解被显示地继承，并且不保存方法上的注解信息。因此，下面的情况现在是有效的:
 ```java
 
  @MyAnnotation
@@ -1088,8 +1088,11 @@ Mockito now preserves annotations on mocked methods and types as well as generic
   assert mockType.isAnnotationPresent(MyAnnotation.class);
   assert mockType.getDeclaredMethod("bar").getGenericReturnType() instanceof ParameterizedType;
 ```
-When using Java 8, Mockito now also preserves type annotations. This is default behavior and might not hold if an alternative MockMaker is used.
 
+使用 Java 8，Mockito 现在也保存类型注解(type annotations)。这是默认行为，如果有[可选择的][mock_marker_][MockMaker][MockMaker]被使用，这种行为可能不会持续。
+
+[mock_marker_]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/Mockito.html#28
+[MockMaker]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/plugins/MockMaker.html
 
 <b id="39"></b>
 ### 39. 模拟final类型，枚举 和 final方法 (Since 2.1.0)
