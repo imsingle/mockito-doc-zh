@@ -374,10 +374,10 @@ public class ArticleManagerTest {
 <b id="11"></b>
 ### 11. 通过回调方式来打桩
 
-允许通过泛型Answer接口进行打桩。
+允许通过泛型[Answer][Answer]接口进行打桩。
 
 在最初的Mockito里也没有这个具有争议性的特性。我们建议使用thenReturn() 或thenThrow()来打桩。这两种方法足够用于测试或者测试驱动开发。
-
+如果你需要用泛型Answer接口来打桩，下面是个例子：
 ```java
  when(mock.someMethod(anyString())).thenAnswer(new Answer() {
      Object answer(InvocationOnMock invocation) {
@@ -387,33 +387,31 @@ public class ArticleManagerTest {
      }
  });
 
- //Following prints "called with arguments: foo"
  // 输出 : "called with arguments: foo"
  System.out.println(mock.someMethod("foo"));
 ```
 
+[Answer]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/stubbing/Answer.html
+
 <b id="12"></b>
-### 12. doReturn()|doThrow()| doAnswer()|doNothing()|doCallRealMethod()系列方法的运用
+### 12. doReturn()|doThrow()| doAnswer()|doNothing()|doCallRealMethod()系列方法
 
 通过`when(Object)`为无返回值的函数打桩有不同的方法,因为编译器不喜欢void函数在括号内...
 
-使用`doThrow(Throwable)` 替换`stubVoid(Object)`来为void函数打桩是为了与`doAnswer()`等函数族保持一致性。
-
-当你想为void函数打桩时使用含有一个exception 参数的`doAnswer()` : 
+当你想为void函数打桩来跑出一个异常时，使用doThrow()方法: 
 
 ```java
 doThrow(new RuntimeException()).when(mockedList).clear();
 
-//following throws RuntimeException:
-// 下面的代码会抛出异常
+// 下面的代码会抛出运行时异常
 mockedList.clear();
 ```
 
-当你调用`doThrow()`, `doAnswer()`, `doNothing()`, `doReturn()` and `doCallRealMethod()` 这些函数时可以在适当的位置调用`when()`函数. 当你需要下面这些功能时这是必须的: 
+当你调用`doThrow()`, `doAnswer()`, `doNothing()`, `doReturn()` and `doCallRealMethod()` 这些函数时，可以在适当的位置调用`when()`函数. 当你需要下面这些功能时这是必须的: 
 
 * 测试void函数
 * 在受监控的对象上测试函数
-* 不只一次的测试为同一个函数，在测试过程中改变mock对象的行为。
+* 同一个函数多次打桩，为了在测试过程中改变mock对象的行为。
 
 但是在调用`when()`函数时你可以选择是否调用这些上述这些函数。
 
@@ -430,9 +428,9 @@ mockedList.clear();
 <b id="13"></b>
 ### 13. 监控真实对象
 
-你可以为真实对象创建一个监控(spy)对象。当你使用这个spy对象时真实的对象也会也调用，除非它的函数被stub了。尽量少使用spy对象，使用时也需要小心形式，例如spy对象可以用来处理遗留代码。
+你可以为真实对象创建多个监控(spy)对象。当使用这个spy对象时，真实的方法会被调用（除非它的函数被stub了）。尽量少使用spy对象，使用时也需要小心形式，例如spy对象可以用来处理遗留代码。
 
-监控一个真实的对象可以与“局部mock对象”概念结合起来。在1.8之前，mockito的监控功能并不是真正的局部mock对象。原因是我们认为局部mock对象的实现方式并不好，在某些时候我发现一些使用局部mock对象的合法用例。（第三方接口、临时重构遗留代码，完整的文章在[这里](http://monkeyisland.pl/2009/01/13/subclass-and-override-vs-partial-mocking-vs-refactoring/) ）
+监控一个真实的对象可以与“局部mock对象”概念结合起来。在1.8之前，mockito的监控功能并不是真正的局部mock对象。原因是我们认为局部mock对象的实现方式并不好。在某些时候，我们发现了使用局部mock对象的合法用例。（第三方接口、临时重构遗留代码，完整的文章在[这里](http://monkeyisland.pl/2009/01/13/subclass-and-override-vs-partial-mocking-vs-refactoring/) ）
 
 ```java
 List list = new LinkedList();
@@ -456,7 +454,7 @@ verify(spy).add("one");
 verify(spy).add("two");
 ```
 
-理解监控真实对象非常重要！
+**理解监控真实对象非常重要！**
 
 有时，在监控对象上使用`when(Object)`来进行打桩是不可能或者不切实际的。因此，当使用监控对象时请考虑`doReturn|Answer|Throw()`函数族来进行打桩。例如 : 
 
@@ -464,16 +462,16 @@ verify(spy).add("two");
 List list = new LinkedList();
 List spy = spy(list);
 
-//不可能 : 当调用spy.get(0)时会调用真实对象的get(0)函数，此时会发生IndexOutOfBoundsException异常，因为真实list对象是空的
+//不可能 : 当调用spy.get(0)时会调用真实对象的get(0)函数，此时会发生IndexOutOfBoundsException异常（因为真实list对象还是空的）
 when(spy.get(0)).thenReturn("foo");
 
 //你必须使用doReturn()来打桩
 doReturn("foo").when(spy).get(0);
 ```
 
-Mockito并不会为真实对象代理函数调用，实际上它会拷贝真实对象。因此如果你保留了真实对象并且与之交互，不要期望从监控对象得到正确的结果。当你在监控对象上调用一个没有被stub的函数时并不会调用真实对象的对应函数，你不会在真实对象上看到任何效果。
+Mockito并不会代理传递来的真实对象，实际上它会拷贝一份真实对象。因此如果你保留了真实对象并且与之交互，不要期望从监控对象得到正确的结果。当你在监控对象上调用一个没有被stub的函数时，并不会调用真实对象的对应函数，你不会在真实对象上看到任何效果。
 
-因此结论就是 : 当你在监控一个真实对象时，你想在stub这个真实对象的函数，那么就是在自找麻烦。或者你根本不应该验证这些函数。
+注意final方法，Mockito不能mock final方法，所以底线是：当你监视真实对象 + 你在fianl方法上打桩 = 问题。同样，你也不能验证这些方法。
 
 <b id="14"></b>
 ### 14. 修改没有测试桩的调用的默认返回值 ( 1.7版本之后 )
