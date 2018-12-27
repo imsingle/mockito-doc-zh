@@ -1,7 +1,7 @@
 # Mockito 中文文档 ( 2.23.4 )
 
 
-> 本文档参考[hehonghui/mockito-doc-zh](https://github.com/hehonghui/mockito-doc-zh)项目，如有侵权，请联系我删除 
+> 本文档参考[hehonghui/mockito-doc-zh](https://github.com/hehonghui/mockito-doc-zh)项目，如有侵权，请联系删除 
 
 Mockito框架官方地址[mockito](https://site.mockito.org/)，[文档地址](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html)。
 
@@ -65,7 +65,6 @@ Mockito库能够Mock对象、验证结果以及打桩(stubbing)。
 <b id="0"></b>
 ### 0. 迁移到Mockito 2.0
 
-
 为了持续提升Mockito以及更进一步的提升单元测试体验,我们希望你升级到Mockito 2.0.Mockito遵循语意化的版本控制，除非有非常大的改变才会变化主版本号。在一个库的生命周期中,为了引入一系列有用的特性，修改已存在的行为或者API等重大变更是在所难免的。因此，我们希望你能够爱上 Mockito 2.0!
 
 重要变更 : 
@@ -92,45 +91,39 @@ Mockito库能够Mock对象、验证结果以及打桩(stubbing)。
  verify(mockedList).add("one");
  verify(mockedList).clear();
 ```
-一旦mock对象被创建了，mock对象会记住所有的交互。然后你就可能选择性的验证你感兴趣的交互。
+一旦mock对象被创建了，mock对象会记住所有的交互动作。然后你就可以选择性的验证你感兴趣的交互动作。
 
 
 <b id="2"></b>
 ### 2. 如何做一些测试桩 (Stub)
 
 ```java
- //You can mock concrete classes, not only interfaces
- // 你可以mock具体的类型,不仅只是接口
+ // 你可以mock具体的类,不仅只是接口
  LinkedList mockedList = mock(LinkedList.class);
 
- //stubbing
  // 测试桩
  when(mockedList.get(0)).thenReturn("first");
  when(mockedList.get(1)).thenThrow(new RuntimeException());
 
- //following prints "first"
  // 输出“first”
  System.out.println(mockedList.get(0));
 
- //following throws runtime exception
  // 抛出异常
  System.out.println(mockedList.get(1));
 
- //following prints "null" because get(999) was not stubbed
  // 因为get(999) 没有打桩，因此输出null
  System.out.println(mockedList.get(999));
 
- //Although it is possible to verify a stubbed invocation, usually it's just redundant
- //If your code cares what get(0) returns then something else breaks (often before even verify() gets executed).
- //If your code doesn't care what get(0) returns then it should not be stubbed. Not convinced? See here.
- // 验证get(0)被调用的次数
+ //虽然能验证被打桩对象的调用情况，但这通常写起来很啰嗦
+ //如果你关注get(0)的返回值，那么其他地方就会中断（通常在verify()执行之前）
+ //如果你不关注get(0)的返回值，那么它就不应该被打桩。不相信？看下面例子。
  verify(mockedList).get(0);
 ```
 
-* 默认情况下，所有的函数都有返回值。mock函数默认返回的是null，一个空的集合或者一个被对象类型包装的内置类型，例如0、false对应的对象类型为Integer、Boolean；
-* 测试桩函数可以被覆写 : 例如常见的测试桩函数可以用于初始化夹具，但是测试函数能够覆写它。请注意，覆写测试桩函数是一种可能存在潜在问题的做法；
-* 一旦测试桩函数被调用，该函数将会一致返回固定的值；
-* 上一次调用测试桩函数有时候极为重要-当你调用一个函数很多次时，最后一次调用可能是你所感兴趣的。
+* 默认情况下，所有的函数都有返回值。mock函数会适当的返回null，原始类型/原始类型的包装类，一个空的集合，例如int/Integer返回0、boolean/Boolean返回false；
+* 打桩动作可以被覆写 : 例如常见的打桩动作可以用于公共的配置，然后在测试函数中能够重新打桩。请注意，覆写测试桩函数是一种潜在的代码异味，它指出打桩动作太多了；
+* 一旦测试桩函数被调用，该函数将会一直返回固定的值；
+* 最后一个打桩动作是很重要的 - 当你用相同参数为一个方法做多次打桩时。换句话说：打桩的顺序很重要，但是这很少有意义，例如，当为完全相同的方法调用打桩，或者当使用参数匹配器时，等等。
 
 
 <b id="3"></b>
@@ -139,56 +132,57 @@ Mockito库能够Mock对象、验证结果以及打桩(stubbing)。
 Mockito以自然的java风格来验证参数值: 使用equals()函数。有时，当需要额外的灵活性时你可能需要使用参数匹配器，也就是argument matchers :
 
 ```java
- //stubbing using built-in anyInt() argument matcher
- // 使用内置的anyInt()参数匹配器
+
+ // 使用内置的anyInt()参数匹配器来打桩
  when(mockedList.get(anyInt())).thenReturn("element");
 
- //stubbing using custom matcher (let's say isValid() returns your own matcher implementation):
- // 使用自定义的参数匹配器( 在isValid()函数中返回你自己的匹配器实现 )
+ // 使用自定义的参数匹配器来打桩( 在isValid()函数中返回你自己的匹配器实现 )
  when(mockedList.contains(argThat(isValid()))).thenReturn("element");
 
- //following prints "element"
- // 输出element
+ // 输出“element”
  System.out.println(mockedList.get(999));
 
- //you can also verify using an argument matcher
- // 你也可以验证参数匹配器
+ // 你也可以用参数匹配器来验证
  verify(mockedList).get(anyInt());
+ 
+ //参数匹配器也能用Java 8 Lambda风格编写
+ verify(mockedList).add(argThat(someString -> someString.length() > 5));
 ```
 
-参数匹配器使验证和测试桩变得更灵活。[点击这里](http://site.mockito.org/mockito/docs/current/org/mockito/Matchers.html)查看更多内置的匹配器以及自定义参数匹配器或者hamcrest 匹配器的示例。
+参数匹配器使验证和打桩变得更灵活。[点击这里][ArgumentMatchers]或[这里][MockitoHamcrest]查看更多内置的匹配器以及自定义参数匹配器或者hamcrest 匹配器的示例。
 
+如果仅仅是获取自定义参数匹配器的信息，查看[ArgumentMatcher类文档][ArgumentMatcher]即可。
 
-如果仅仅是获取自定义参数匹配器的信息，查看[ArgumentMatcher类文档](http://site.mockito.org/mockito/docs/current/org/mockito/ArgumentMatcher.html)即可。
+为了合理的使用复杂的参数匹配，使用原生风格的equals()匹配器，偶尔也用下anyX()匹配器，会使得测试代码更简洁、简单。有时，会迫使你重构代码以使用equals()匹配或者实现equals()函数来帮助你进行测试。
 
-为了合理的使用复杂的参数匹配，使用equals()与anyX() 的匹配器会使得测试代码更简洁、简单。有时，会迫使你重构代码以使用equals()匹配或者实现equals()函数来帮助你进行测试。
+同时建议你阅读[第15章节](#sec_15)或者[ArgumentCaptor类文档][ArgumentCaptor]。ArgumentCaptor是一个能够捕获参数值的特殊参数匹配器。
 
-同时建议你阅读[第15章节](#sec_15)或者[ArgumentCaptor类文档](http://site.mockito.org/mockito/docs/current/org/mockito/ArgumentCaptor.html)。ArgumentCaptor是一个能够捕获参数值的特殊参数匹配器。
+**参数匹配器的注意点 :**
 
-
-参数匹配器的注意点 : 
-
-如果你使用参数匹配器,所有参数都必须由匹配器提供。
+如果你使用了参数匹配器, 那么所有参数都要用匹配器。
 
 示例 : ( 该示例展示了如何多次应用于测试桩函数的验证 ) 
 
 ```java
 verify(mock).someMethod(anyInt(), anyString(), eq("third argument"));
-//above is correct - eq() is also an argument matcher
 // 上述代码是正确的,因为eq()也是一个参数匹配器
 
 verify(mock).someMethod(anyInt(), anyString(), "third argument");
-//above is incorrect - exception will be thrown because third argument 
-// 上述代码是错误的,因为所有参数必须由匹配器提供，而参数"third argument"并非由参数匹配器提供，因此的缘故会抛出异常
+// 上述代码是错误的,因为所有参数必须由匹配器提供，而参数"third argument"并非由参数匹配器提供，因此会抛出异常
 ```
 
-像anyObject(), eq()这样的匹配器函数不会返回匹配器。它们会在内部将匹配器记录到一个栈当中，并且返回一个假的值，通常为null。`这样的实现是由于被Java编译器强加的静态类型安全`。结果就是你不能在验证或者测试桩函数之外使用anyObject(), eq()函数。
+像anyObject(), eq()这样的匹配器函数不会返回匹配器。它们会在内部将匹配器记录到一个栈当中，并且返回一个假的值，通常为null。`这样的实现是由于被Java编译器强加的静态类型安全检查`。结果就是你不能在验证或者测试桩函数之外使用anyObject(), eq()函数。
+
+[ArgumentMatchers]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/ArgumentMatchers.html
+[ArgumentMatcher]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/ArgumentMatcher.html
+[MockitoHamcrest]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/hamcrest/MockitoHamcrest.html
+[ArgumentCaptor]:http://site.mockito.org/mockito/docs/current/org/mockito/ArgumentCaptor.html
 
 <b id="4"></b>
-### 4. 验证函数的确切、最少、从未调用次数
+### 4. 验证函数的确切、最少、从未调用的次数
 
 ```java
- //using mock
+ //使用mock对象
  mockedList.add("once");
 
  mockedList.add("twice");
@@ -198,22 +192,18 @@ verify(mock).someMethod(anyInt(), anyString(), "third argument");
  mockedList.add("three times");
  mockedList.add("three times");
 
- //following two verifications work exactly the same - times(1) is used by default
  // 下面的两个验证函数效果一样,因为verify默认验证的就是times(1)
  verify(mockedList).add("once");
  verify(mockedList, times(1)).add("once");
 
- //exact number of invocations verification
  // 验证具体的执行次数
  verify(mockedList, times(2)).add("twice");
  verify(mockedList, times(3)).add("three times");
 
- //verification using never(). never() is an alias to times(0)
  // 使用never()进行验证,never相当于times(0)
  verify(mockedList, never()).add("never happened");
 
- //verification using atLeast()/atMost()
- // 使用atLeast()/atMost()
+ // 使用atLeast()/atMost()进行验证
  verify(mockedList, atLeastOnce()).add("three times");
  verify(mockedList, atLeast(2)).add("five times");
  verify(mockedList, atMost(5)).add("three times");
@@ -223,90 +213,76 @@ verify(mock).someMethod(anyInt(), anyString(), "third argument");
 verify函数默认验证的是执行了times(1)，也就是某个测试函数是否执行了1次.因此，times(1)通常被省略了。
 
 <b id="5"></b>
-### 5. 为返回值为void的函数通过Stub抛出异常
+### 5. 通过打桩为无返回值函数抛出异常
 
 ```java
 doThrow(new RuntimeException()).when(mockedList).clear();
 
-//following throws RuntimeException:
-// 调用这句代码会抛出异常
+// 调用这句代码会抛出运行时异常
 mockedList.clear();
 ```
 
-关于doThrow|doAnswer 等函数族的信息请阅读第十二章节。
-
-最初，[stubVoid(Object)](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#stubVoid(T)) 函数用于为无返回值的函数打桩。现在stubVoid()函数已经过时,doThrow(Throwable)成为了它的继承者。这是为了提升与 doAnswer(Answer) 函数族的可读性与一致性。
-
+关于doThrow|doAnswer 等函数族的信息请阅读[第十二章节](#12)。
 
 <b id="6"></b>
 ### 6. 验证执行执行顺序
 
 ```java
- // A. Single mock whose methods must be invoked in a particular order
- // A. 验证mock一个对象的函数执行顺序
+ // A. 一个方法必须以指定顺序执行的模拟的对象
  List singleMock = mock(List.class);
 
- //using a single mock
+ //使用这个模拟的对象
  singleMock.add("was added first");
  singleMock.add("was added second");
 
- //create an inOrder verifier for a single mock
- // 为该mock对象创建一个inOrder对象
+ // 为该mock对象创建一个inOrder验证器
  InOrder inOrder = inOrder(singleMock);
 
- //following will make sure that add is first called with "was added first, then with "was added second"
  // 确保add函数首先执行的是add("was added first"),然后才是add("was added second")
  inOrder.verify(singleMock).add("was added first");
  inOrder.verify(singleMock).add("was added second");
 
- // B. Multiple mocks that must be used in a particular order
- // B .验证多个mock对象的函数执行顺序
+ // B .验证多个mock对象的必须以指定顺序被调用
  List firstMock = mock(List.class);
  List secondMock = mock(List.class);
 
- //using mocks
+ //使用多个模拟的对象
  firstMock.add("was called first");
  secondMock.add("was called second");
 
- //create inOrder object passing any mocks that need to be verified in order
- // 为这两个Mock对象创建inOrder对象
+ // 创建inOrder对象，将需要验证的模拟对象传进来
  InOrder inOrder = inOrder(firstMock, secondMock);
 
- //following will make sure that firstMock was called before secondMock
- // 验证它们的执行顺序
+ // 下面将会确认第一个模拟对象会在第二个模拟对象前被调用
  inOrder.verify(firstMock).add("was called first");
  inOrder.verify(secondMock).add("was called second");
 
  // Oh, and A + B can be mixed together at will
 ```
 
-验证执行顺序是非常灵活的-你不需要一个一个的验证所有交互,只需要验证你感兴趣的对象即可。
+验证执行顺序是非常灵活的 - 你不需要一个一个的验证所有交互,只需要验证你感兴趣的对象即可。
 另外，你可以仅通过那些需要验证顺序的mock对象来创建InOrder对象。
 
 
 <b id="7"></b>
-### 7. 确保交互(interaction)操作不会执行在mock对象上
+### 7. 确认交互(interaction)操作没有在mock对象上执行
 
 ```java
- //using mocks - only mockOne is interacted
- // 使用Mock对象
+ // 使用Mock对象 - 只有 mockOne发生了交互
  mockOne.add("one");
 
- //ordinary verification
  // 普通验证
  verify(mockOne).add("one");
 
- //verify that method was never called on a mock
- // 验证某个交互是否从未被执行
+ // 验证一个模拟对象没有执行某个方法
  verify(mockOne, never()).add("two");
 
- //verify that other mocks were not interacted
- // 验证mock对象没有交互过
+ // 验证其他mock对象没有交互
  verifyZeroInteractions(mockTwo, mockThree);
 ```
 
 <b id="8"></b>
-### 8. 查找冗余的调用
+### 8. 查找多余的调用
 
 ```java
 //using mocks
@@ -315,18 +291,19 @@ mockedList.add("two");
 
 verify(mockedList).add("one");
 
-//following verification will fail
 // 下面的验证将会失败
 verifyNoMoreInteractions(mockedList);
 ```
 
-一些用户可能会在频繁地使用`verifyNoMoreInteractions()`，甚至在每个测试函数中都用。但是`verifyNoMoreInteractions()`并不建议在每个测试函数中都使用。`verifyNoMoreInteractions()`在交互测试套件中只是一个便利的验证，它的作用是当你需要验证是否存在冗余调用时。滥用它将导致测试代码的可维护性降低。你可以阅读[这篇文档](http://monkeyisland.pl/2008/07/12/should-i-worry-about-the-unexpected/)来了解更多相关信息。
+一些做了很多经典的、期望-执行-测试风格的模拟的用户，可能倾向于经常使用`verifyNoMoreInteractions()`，甚至在每个测试函数中都用。但是`verifyNoMoreInteractions()`并不建议在每个测试函数中都使用。`verifyNoMoreInteractions()`在交互测试套件中只是一个便利的验证，它的作用是当你需要验证是否存在冗余调用时。滥用它将导致测试代码的可维护性降低。你可以阅读[这篇文档][unexpected]来了解更多相关信息。
 
-`never()`是一种更为明显且易于理解的形式。
+也可以看看[`never()`][never]，它更加明确，并且很好地传达了意图。
 
+[unexpected]:http://monkeyisland.pl/2008/07/12/should-i-worry-about-the-unexpected/
+[never]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/Mockito.html#never--
 
 <b id="9"></b>
-### 9. 简化mock对象的创建
+### 9. 简化mock对象的创建 - @Mock注解
 
 * 最小化重复的创建代码
 * 使测试类的代码可读性更高
@@ -342,39 +319,37 @@ public class ArticleManagerTest {
    private ArticleManager manager;
 ```
 
-注意！下面这句代码需要在运行测试函数之前被调用,一般放到测试类的基类或者test runner中:
+**注意！** 下面这句代码需要在运行测试函数之前被调用,一般放到测试类的基类或者test runner中:
 
 ```java
  MockitoAnnotations.initMocks(testClass);
 ```
 
-你可以使用内置的runner: [MockitoJUnitRunner] [runner] 或者一个rule : [MockitoRule][rule]。
-关于mock注解的更多信息可以阅读[MockitoAnnotations文档](http://site.mockito.org/mockito/docs/current/org/mockito/MockitoAnnotations.html)。
+你可以使用内置的runner: [MockitoJUnitRunner] [runner] 或者一个rule : [MockitoRule][rule]。关于JUnit5的测试案例，查看[45章节](#45)关于JUnit扩展的描述。
+关于mock注解的更多信息可以阅读[MockitoAnnotations文档][MockitoAnnotations]。
 
 [runner]: http://site.mockito.org/mockito/docs/current/org/mockito/runners/MockitoJUnitRunner.html
 [rule]: http://site.mockito.org/mockito/docs/current/org/mockito/junit/MockitoRule.html
+[MockitoAnnotations]:http://site.mockito.org/mockito/docs/current/org/mockito/MockitoAnnotations.html
 
 
 <b id="10"></b>
-### 10. 为连续的调用做测试桩 (stub)
+### 10. 为连续的调用打桩 (迭代器风格的打桩)
 
-有时我们需要为同一个函数调用的不同的返回值或异常做测试桩。典型的运用就是使用mock迭代器。
-原始版本的Mockito并没有这个特性，例如，可以使用Iterable或者简单的集合来替换迭代器。这些方法提供了更自然的方式，在一些场景中为连续的调用做测试桩会很有用。示例如下 ： 
+有时我们需要为同一个函数调用的不同的返回值/异常做测试桩。典型的运用案例就是对迭代器的模拟。
+原始版本的Mockito并没有这个特性来促进模拟行为更简单，例如，可以使用Iterable或者简单的集合来替换迭代器。这些方法提供了更自然的方式，在一些场景中为连续的调用做测试桩会很有用。示例如下 ： 
 
 ```java
  when(mock.someMethod("some arg"))
    .thenThrow(new RuntimeException())
    .thenReturn("foo");
 
- //First call: throws runtime exception:
  // 第一次调用 : 抛出运行时异常
  mock.someMethod("some arg");
 
- //Second call: prints "foo"
  // 第二次调用 : 输出"foo"
  System.out.println(mock.someMethod("some arg"));
 
- //Any consecutive call: prints "foo" as well (last stubbing wins).
  // 后续调用 : 也是输出"foo"
  System.out.println(mock.someMethod("some arg"));
 ```
@@ -387,8 +362,17 @@ public class ArticleManagerTest {
    .thenReturn("one", "two", "three");
 ```
 
+注意：如果替代了“.thenReturn()"的调用，多个使用相同匹配器或参数的打桩动作，那么每个打桩动作都会覆盖之前的动作：
+```java
+ //All mock.someMethod("some arg") calls will return "two"
+ when(mock.someMethod("some arg"))
+   .thenReturn("one");
+ when(mock.someMethod("some arg"))
+   .thenReturn("two");
+```
+
 <b id="11"></b>
-### 11. 为回调做测试桩
+### 11. 通过回调方式来打桩
 
 允许通过泛型Answer接口进行打桩。
 
