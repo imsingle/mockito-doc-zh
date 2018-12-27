@@ -471,12 +471,14 @@ doReturn("foo").when(spy).get(0);
 
 Mockito并不会代理传递来的真实对象，实际上它会拷贝一份真实对象。因此如果你保留了真实对象并且与之交互，不要期望从监控对象得到正确的结果。当你在监控对象上调用一个没有被stub的函数时，并不会调用真实对象的对应函数，你不会在真实对象上看到任何效果。
 
-注意final方法，Mockito不能mock final方法，所以底线是：当你监视真实对象 + 你在fianl方法上打桩 = 问题。同样，你也不能验证这些方法。
+注意final方法，Mockito不能mock final方法，所以底线是：当你监视真实对象，你尝试在fianl方法上打桩，那么会有问题。同样，你也不能验证这些方法。
 
 <b id="14"></b>
 ### 14. 修改没有测试桩的调用的默认返回值 ( 1.7版本之后 )
 
-你可以指定策略来创建mock对象的返回值。这是一个高级特性，通常来说，你不需要写这样的测试。然后，它对于遗留系统来说是很有用处的。当你不需要为函数调用打桩时你可以指定一个默认的answer。
+你可以创建mock对象，用指定策略来作为它的返回值。这是一个高级特性，通常来说，你不需要写这样的测试。无论如何，它对于遗留系统来说是很有用处的。
+
+当你没有为函数调用打桩时，你可以指定一个默认的answer。
 
 ```java
 Foo mock = mock(Foo.class, Mockito.RETURNS_SMART_NULLS);
@@ -499,12 +501,14 @@ verify(mock).doSomething(argument.capture());
 assertEquals("John", argument.getValue().getName());
 ```
 
-警告 : 我们建议使用没有测试桩的ArgumentCaptor来验证，因为使用含有测试桩的ArgumentCaptor会降低测试代码的可读性，因为captor是在断言代码块之外创建的。另一个好处是它可以降低本地化的缺点，因为如果测试桩函数没有被调用，那么参数就不会被捕获。总之，ArgumentCaptor与自定义的参数匹配器相关(可以查看[ArgumentMatcher类的文档](ArgumentMatcher) )。这两种技术都能用于检测外部传递到Mock对象的参数。然而，使用ArgumentCaptor在以下的情况下更合适 : 
+警告 : 我们建议在验证时使用ArgumentCaptor，而不是在打桩时。在打桩时使用ArgumentCaptor会降低测试代码的可读性，因为captor是在断言(又称为 验证/then)代码块之外创建的。另外，它可以降低本地化的缺点，因为如果测试桩函数没有被调用，那么参数就不会被捕获。
+
+总之，ArgumentCaptor与自定义的参数匹配器相关(可以查看[ArgumentMatcher类的文档](ArgumentMatcher) )。这两种技术都能用于检测外部传递到Mock对象的参数。然而，使用ArgumentCaptor在以下的情况下更合适 : 
 
 * 自定义不能被重用的参数匹配器
 * 你仅需要断言参数值
 
-自定义参数匹配器相关的资料你可以参考[ArgumentMatcher](ArgumentMatcher)文档。
+打桩时用自定义参数匹配器更好点[ArgumentMatcher](ArgumentMatcher)。
 
 [ArgumentMatcher]: http://site.mockito.org/mockito/docs/current/org/mockito/ArgumentMatcher.html
 
@@ -513,10 +517,10 @@ assertEquals("John", argument.getValue().getName());
 
 在内部通过邮件进行了无数争辩和讨论后，最终 Mockito 决定支持部分mock，早前我们不支持是因为我们认为局部mocks会让代码变得糟糕。然而，我们发现了局部mocks真正合理的用法。[详情点这](http://monkeyisland.pl/2009/01/13/subclass-and-override-vs-partial-mocking-vs-refactoring/)
 
-在 Mockito 1.8 之前，spy() 方法并不会产生真正的局部mocks，而这无疑会让一些开发者困惑。更详细的内容可以看：[这里](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#13) 或 [Java 文档](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#spy(T))
+在 Mockito 1.8 之前，spy() 方法并不会产生真正的局部mocks，而这无疑会让一些开发者困惑。更详细的内容可以看：[这里](#13) 或 [Java 文档](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#spy(T))
 
 ```java
-    //you can create partial mock with spy() method:
+    //你能spy()方法创建局部模拟的对象:
     List list = spy(new LinkedList());
 
     //局部mock能力是可选的
@@ -526,20 +530,20 @@ assertEquals("John", argument.getValue().getName());
     when(mock.someMethod()).thenCallRealMethod();
 ```
 
-一如既往，你应该去读部分mock的注意事项：面向对象编程通过把复杂系统拆分成独立个体来减少整体的复杂度，尤其是，SRPy对象。那部分mock是怎么遵循这个规范的呢？事实上它并没有遵循这个规范……部分mock通常意味着复杂性被移动到同一个对象的不同方法中，在大多数情况下，这不会是你想要的应用架构方式。
+一如既往，你应该阅读局部mock的注意事项：面向对象编程通过把复杂系统拆分成独立个体来减少整体的复杂度，尤其是，SRPy对象。那局部mock是怎么遵循这个规范的呢？事实上它并没有遵循这个规范……局部mock通常意味着复杂性被移动到同一个对象的不同方法中，在大多数情况下，这不会是你想要的应用架构方式。
 
-然而，在一些特殊的情况下部分mocks是方便的：处理不能轻易修改的代码（第三方接口，临时重构的遗留代码等）。然而，为了新的，测试驱动和架构优秀的代码，我是不会使用部分mocks的。
+然而，在一些特殊的情况下局部mocks是方便的：处理不能轻易修改的代码（第三方接口，临时重构的遗留代码等）。然而，在新的测试驱动和架构优秀的代码上，我是不会使用局部mocks的。
 
 <b id="17"></b>
 ### 17. 重置mocks对象 (1.8版本之后)
 
-聪明的 Mockito 使用者很少会用到这个特性，因为他们知道这是出现糟糕测试单元的信号。通常情况下你不会需要重设你的mocks，只需要为每一个测试方法重新创建一个mocks就可以了。
+聪明的 Mockito 使用者很少会用到这个特性，因为他们知道这是出现糟糕测试单元的信号。通常情况下你不会需要重设你的mocks，只需要为每个测试方法重新创建一个mocks就可以了。
 
-请考虑实现简单，小并且专注的测试方法，而不是冗长，特殊的测试用例，来代替reset()。首先可能出现的代码异味就是测试方法中间那的 reset() 方法。这可能意味着你已经过度测试了。请倾听测试方法的声音：请让我们小，而且专注在单一的行为上。在 Mockito 邮件列表中就有好几个讨论是和这个有关的。
+请考虑实现简单、小并且专注的测试方法，而不是冗长的、特殊的测试用例，来代替reset()。首先可能出现的代码异味的地方就是测试方法中间的 reset() 方法。这可能意味着你已经过度测试了。请倾听测试方法的声音：请让我们小巧的，而且专注在单一的行为上。在 Mockito 邮件列表中就有好几个和这个有关的讨论。
 
-添加 reset() 方法的唯一原因就是让它能与容器注入的mocks协作。详情看 [issue 55](http://code.google.com/p/mockito/issues/detail?id=55) 或 [FAQ](http://code.google.com/p/mockito/wiki/FAQ)。
+添加 reset() 方法的唯一原因是让它能与容器注入的mocks协作。详情看 [issue 55](http://code.google.com/p/mockito/issues/detail?id=55) 或 [FAQ](http://code.google.com/p/mockito/wiki/FAQ)。
 
-别自己给自己找麻烦，reset() 方法在测试方法的中间确实是代码异味。
+别自己给自己找麻烦，reset() 方法在测试方法中间确实是代码异味。
 
 
 ```java
@@ -552,20 +556,18 @@ assertEquals("John", argument.getValue().getName());
 ```
 
 <b id="18"></b>
-
 ### 18. 故障排查与验证框架的使用 (1.8版本之后)
 
 首先，如果出现了任何问题，我建议你先看 [Mockito FAQ](http://code.google.com/p/mockito/wiki/FAQ)。
 
-任何你提的问题都会被提交到 Mockito 的[邮件列表](http://groups.google.com/group/mockito)中。
+万一有问题，你可以把问题提交到 Mockito 的[邮件列表](http://groups.google.com/group/mockito)中。
 
-然后你应该知道 Mockito 会验证你是否始终以正确的方式使用它，对此有疑惑的话不妨看看 [validateMockitoUsage()](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#validateMockitoUsage()) 的文档说明。
+然后，如果你一直正确的使用Mocktio，你应该知道Mockito的检查机制。对此有疑惑的话不妨看看 [validateMockitoUsage()](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#validateMockitoUsage()) 的文档说明。
 
 <b id="19"></b>
-
 ### 19.行为驱动开发的别名 (1.8版本之后)
 
-行为驱动开发实现测试单元的模式将 //given //when //then 注释视作测试方法的基础，这也是我们实现单元测试也建议你去做的！
+用行为驱动开发的风格来写测试用例，会使用//given //when //then 注解作为测试方法的基础部分。这正是我们编写测试的方式，我们热情地鼓励您这样做！
 
 [你可以在这开始学习有关 BDD 的知识](http://en.wikipedia.org/wiki/Behavior_Driven_Development)
 
@@ -594,7 +596,7 @@ assertEquals("John", argument.getValue().getName());
 
 ### 20. 可序列化的mocks(1.8.1版本之后)
 
-模拟对象是可以被序列化的。有了这个特性，你就可以在要求对象依赖的数据可序列化时，也能mock这个对象。
+模拟的对象是可以被序列化的。有了这个特性，你就可以在要求依赖项是可序列化的地方，使用模拟对象。
 
 警告：这个特性应该在单元测试中少用。
 
@@ -606,9 +608,9 @@ assertEquals("John", argument.getValue().getName());
    List serializableMock = mock(List.class, withSettings().serializable());
 ```
 
-模拟对象能被序列化假设所有普通的[序列化要求]((http://java.sun.com/j2se/1.5.0/docs/api/java/io/Serializable.html))都被类满足了。
+假设所有普通的[序列化要求]((http://java.sun.com/j2se/1.5.0/docs/api/java/io/Serializable.html))都被类满足了，模拟的对象是能被序列化的。
 
-让一个真实的侦查对象可序列化需要多一些努力，因为 spy(...) 方法没有接收 MockSettings 的重载版本。不过不用担心，你几乎不可能用到这。
+让一个真实的侦查对象可序列化需要多一些努力，因为 spy(...) 方法没有接收 MockSettings 参数的重载版本。不过不用担心，你几乎不可能用到这。
 
 ```java
  List<Object> list = new ArrayList<Object>();
@@ -624,17 +626,26 @@ assertEquals("John", argument.getValue().getName());
 
 V1.8.3 带来的新注解在某些场景下可能会很实用:
 
-@[Captor](http://site.mockito.org/mockito/docs/current/org/mockito/Captor.html) 简化 [ArgumentCaptor](http://site.mockito.org/mockito/docs/current/org/mockito/ArgumentCaptor.html) 的创建 - 当需要捕获的参数是一个令人讨厌的泛型类，而且你想避免编译时警告。
+@[Captor][Captor] 简化 [ArgumentCaptor][ArgumentCaptor] 的创建 - 当需要捕获的参数是一个令人讨厌的泛型类，而且你想避免编译时警告。
 
-@[Spy](http://site.mockito.org/mockito/docs/current/org/mockito/Spy.html) - 你可以用它代替 [spy(Object) 方法](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#spy(T))
+@[Spy][Spy] - 你可以用它代替 [spy(Object) 方法][MockitoSpy]
 
-@[InjectMocks](http://site.mockito.org/mockito/docs/current/org/mockito/InjectMocks.html) - 自动将模拟或监视的对象注入到被测试对象中。需要注意的是 @InjectMocks 也能与 @Spy 一起使用，这就意味着 Mockito会在测试中，将mocks对象注入局部mock对象中。这变得很复杂，所以你还是应该少用局部mock。参考16点关于局部mock的介绍。
+@[InjectMocks][InjectMocks] - 自动将模拟或监视的对象注入到被测试对象中。需要注意的是 @InjectMocks 也能与 @Spy 一起使用，这就意味着 Mockito会在测试中，将mocks对象注入局部mock对象中。这变得很复杂，所以你还是应该少用局部mock。参考16点关于局部mock的介绍。
 
-所有新的注解都是只在MockitoAnnotations.initMocks(Object)被处理。就像@[Mock](http://site.mockito.org/mockito/docs/current/org/mockito/Mock.html)注解，你能用内置runner([MockitoJUnitRunner](http://site.mockito.org/mockito/docs/current/org/mockito/runners/MockitoJUnitRunner.html) 或 规则: [MockitoRule](http://site.mockito.org/mockito/docs/current/org/mockito/junit/MockitoRule.html))来开启。
+所有新的注解都是只在MockitoAnnotations.initMocks(Object)被处理。就像@[Mock][Mock]注解，你能用内置runner([MockitoJUnitRunner][MockitoJUnitRunner] 或 规则: [MockitoRule][MockitoRule])来开启。
 所有新的注解都是只在[MockitoAnnotations.initMocks(Object)]
 
-<b id="22"></b>
+[Captor]:http://site.mockito.org/mockito/docs/current/org/mockito/Captor.html
+[ArgumentCaptor]:http://site.mockito.org/mockito/docs/current/org/mockito/ArgumentCaptor.html
+[Spy]:http://site.mockito.org/mockito/docs/current/org/mockito/Spy.html
+[MockitoSpy]:http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#spy(T)
+[InjectMocks]:http://site.mockito.org/mockito/docs/current/org/mockito/InjectMocks.html
+[Mock]:http://site.mockito.org/mockito/docs/current/org/mockito/Mock.html
+[MockitoJUnitRunner]:http://site.mockito.org/mockito/docs/current/org/mockito/runners/MockitoJUnitRunner.html
+[MockitoRule]:http://site.mockito.org/mockito/docs/current/org/mockito/junit/MockitoRule.html
 
+
+<b id="22"></b>
 ### 22. 验证超时 (1.8.5版本之后)
 
 允许验证超时。这使得一个验证会等待一段特定的时间，以获得想要的交互，而不是还没有发生事件就立即失败(即超时时间到了才会失败)。在并发条件下的测试这会很有用。
