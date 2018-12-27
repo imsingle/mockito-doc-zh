@@ -13,8 +13,8 @@ Mockito库能够Mock对象、验证结果以及打桩(stubbing)。
 ## 目录
 
 0. [迁移到Mockito 2.0](#0)  
-0.1 [对Android的支持](#0.1)   
-0.2 [Configuration-free inline mock making](#0.2)
+0.1 [Mockito支持Android](#0.1)   
+0.2 [免配置内联mock making](#0.2)
 1. [验证某些行为](#1)
 2. [如何做一些测试桩 (Stub)](#2)
 3. [参数匹配器 (matchers)](#3)
@@ -72,6 +72,39 @@ Mockito库能够Mock对象、验证结果以及打桩(stubbing)。
 * Mockito从Hamcrest中解耦，自定义的matchers API也发生了改变,查看[ArgumentMatcher](http://site.mockito.org/mockito/docs/current/org/mockito/ArgumentMatcher.html) 的基本原理以及迁移指南。
 
 跟着我们的示例来mock 一个List,因为大家都知道它的接口（例如add(),get(), clear()）。不要mock一个真实的List类型,使用一个真实的实例来替代。
+
+<b id="0.1"></b>
+### 0.1. Mockito支持Android
+在2.6.1版本，我们提供了”原生的“Android支持。通过在项目中新增”mockito-android“库依赖，就能得到支持。这个工件发布到同一个Mockito组织，并且可以按照以下方式导入Android:
+
+```java
+  repositories {
+   jcenter()
+ }
+ dependencies {
+   testCompile "org.mockito:mockito-core:+"
+   androidTestCompile "org.mockito:mockito-android:+"
+ }
+```
+通过在“testCompile”范围中使用“mockito-core”工件，可以在常规VM上继续运行相同的单元测试，如上所示。请注意，由于Android VM的限制，您不能在Android上使用内联模拟生成器。如果您在Android上遇到模拟的问题，请在官方问题跟踪器上打开一个issue。一定要提供您正在使用的Android版本和项目的依赖项。
+
+<b id="0.2"></b>
+### 0.2. 免配置内联mock making
+
+从2.7.6版本开始，我们提供”mockito-inline“ artifact，它支持内联的mock making而不需要配置MockMaker的扩自文件。使用方式，用”mockito-inline“替换”mockito-core“：
+```java
+ 
+ repositories {
+   jcenter()
+ }
+ dependencies {
+   testCompile "org.mockito:mockito-inline:+"
+ }
+ 
+```
+注意，这个artifact可能会停止维护，当内联mock making特性被集成到默认的mock maker里时。
+查看更多关于内联mock making，查看[39章](#39)
+
 
 <b id="1"></b>
 ### 1. 验证某些行为
