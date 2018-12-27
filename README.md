@@ -630,7 +630,9 @@ V1.8.3 带来的新注解在某些场景下可能会很实用:
 
 @[Spy][Spy] - 你可以用它代替 [spy(Object) 方法][MockitoSpy]
 
-@[InjectMocks][InjectMocks] - 自动将模拟或监视的对象注入到被测试对象中。需要注意的是 @InjectMocks 也能与 @Spy 一起使用，这就意味着 Mockito会在测试中，将mocks对象注入局部mock对象中。这变得很复杂，所以你还是应该少用局部mock。参考16点关于局部mock的介绍。
+@[InjectMocks][InjectMocks] - 自动将模拟或监视的对象注入到被测试对象中。
+
+需要注意的是 @InjectMocks 也能与 @Spy 一起使用，这就意味着 Mockito会在测试中，将mocks对象注入局部mock对象中。这变得很复杂，所以你还是应该少用局部mock。参考[16点](#16)关于局部mock的介绍。
 
 所有新的注解都是只在MockitoAnnotations.initMocks(Object)被处理。就像@[Mock][Mock]注解，你能用内置runner([MockitoJUnitRunner][MockitoJUnitRunner] 或 规则: [MockitoRule][MockitoRule])来开启。
 所有新的注解都是只在[MockitoAnnotations.initMocks(Object)]
@@ -646,11 +648,11 @@ V1.8.3 带来的新注解在某些场景下可能会很实用:
 
 
 <b id="22"></b>
-### 22. 验证超时 (1.8.5版本之后)
+### 22. 带超时的验证 (1.8.5版本之后)
 
-允许验证超时。这使得一个验证会等待一段特定的时间，以获得想要的交互，而不是还没有发生事件就立即失败(即超时时间到了才会失败)。在并发条件下的测试这会很有用。
+允许带超时的验证。这使得一个验证会等待一段特定的时间，以获得想要的交互，而不是还没有发生事件就立即失败(即超时时间到了才会失败)。在并发条件下的测试这会很有用。
 
-这个特性应该很少被使用 - 指出更好的测试多线程系统的方法。
+这个特性应该少被使用 - 找到更好的方法去测试多线程系统。
 
 还没有实现和 InOrder 验证协作。
 
@@ -671,12 +673,11 @@ V1.8.3 带来的新注解在某些场景下可能会很实用:
 ```
 
 <b id="23"></b>
+### 23. 自动实例化被@Spies, @InjectMocks注释的字段以及构造函数注入 (1.9.0版本之后)
 
-### 23. 自动实例化被@Spies, @InjectMocks注解的字段以及构造函数注入 (1.9.0版本之后)
+Mockito 现在会通过构造器注入、setter注入 或字段注入方式，尽可能初始化带有 @[Spy][Spy] 和 @[InjectMocks][InjectMocks] 注解的字段。
 
-Mockito 现在会通过构造器注入、setter注入 或字段注入方式，尽可能初始化带有 @[Spy](http://site.mockito.org/mockito/docs/current/org/mockito/Spy.html) 和 @[InjectMocks](http://site.mockito.org/mockito/docs/current/org/mockito/InjectMocks.html) 注解的字段。
-
-为了利用这一点特性，你需要使用 [MockitoAnnotations.initMocks(Object)](http://site.mockito.org/mockito/docs/current/org/mockito/MockitoAnnotations.html#initMocks(java.lang.Object)), [MockitoJUnitRunner](http://site.mockito.org/mockito/docs/current/org/mockito/runners/MockitoJUnitRunner.html) 或 [MockitoRule](http://site.mockito.org/mockito/docs/current/org/mockito/junit/MockitoRule.html)。
+为了利用这个特性，你需要使用 [MockitoAnnotations.initMocks(Object)][initMocks], [MockitoJUnitRunner][MockitoJUnitRunner] 或 [MockitoRule][MockitoRule]。
 
 请在InjectMocks的javadoc查看更多的使用技巧和注入规范
 
@@ -690,11 +691,16 @@ Mockito 现在会通过构造器注入、setter注入 或字段注入方式，�
  @InjectMocks LocalPub;
 ```
 
-<b id="24"></b>
+[Spy]:http://site.mockito.org/mockito/docs/current/org/mockito/Spy.html
+[InjectMocks]:http://site.mockito.org/mockito/docs/current/org/mockito/InjectMocks.html
+[initMocks]:http://site.mockito.org/mockito/docs/current/org/mockito/MockitoAnnotations.html#initMocks(java.lang.Object)
+[MockitoJUnitRunner]:http://site.mockito.org/mockito/docs/current/org/mockito/runners/MockitoJUnitRunner.html
+[MockitoRule]:http://site.mockito.org/mockito/docs/current/org/mockito/junit/MockitoRule.html
 
+<b id="24"></b>
 ### 24. 单行测试桩 (1.9.0版本之后)
 
-Mockito 现在允许你在测试打桩时创建模拟对象。基本上，它允许通过一行代码来创建一个测试桩，这对保持代码的整洁很有用。举例来说，在测试字段初始化时，有些简单的测试桩可以被创建并赋值到该字段上，例如：
+Mockito 现在允许在打桩时创建模拟对象。主要是，它允许通过一行代码来创建一个测试桩。这对保持代码的整洁很有用。举例来说，在测试字段初始化时，有些简单的测试桩可以被创建并赋值到字段上，例如：
 
 ```java
  public class CarTest {
@@ -704,12 +710,11 @@ Mockito 现在允许你在测试打桩时创建模拟对象。基本上，它允
 ```
 
 <b id="25"></b>
-
 ### 25. 验证被忽略的测试桩 (1.9.0版本之后)
 
-Mockito 现在允许为了验证而无视测试桩。在与 verifyNoMoreInteractions() 方法组合或验证 inOrder() 方法时，有些时候会很有用。帮助避免多余的测试桩调用校验 - 显然我们不会对验证测试桩感兴趣。
+Mockito 现在允许为了更好的验证而忽略已有的测试桩。与 verifyNoMoreInteractions() 方法或验证 inOrder() 方法组合使用，有时很有用。帮助避免多余的测试桩调用校验 - 显然我们不会对验证测试桩感兴趣。
 
-警告，ignoreStubs() 可能会导致 verifyNoMoreInteractions(ignoreStubs(...)) 的过度使用。谨记在心，Mockito 没有推荐用 [verifyNoMoreInteractions()](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#verifyNoMoreInteractions(java.lang.Object...)) 方法连续地施用于每一个测试中，原因在 [verifyNoMoreInteractions(Object...)](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#verifyNoMoreInteractions(java.lang.Object...))的Java 文档中有。
+警告，ignoreStubs() 可能会导致 verifyNoMoreInteractions(ignoreStubs(...)) 方法的过度使用。谨记在心，Mockito 没有推荐在每一个测试中用 verifyNoMoreInteractions() 方法，原因在 [verifyNoMoreInteractions(Object...)][verifyNoMoreInteractions]的Java 文档中有。
 
 一些例子：
 
@@ -727,8 +732,10 @@ Mockito 现在允许为了验证而无视测试桩。在与 verifyNoMoreInteract
  inOrder.verifyNoMoreInteractions();
 ```
 
-更好的例子和更多的细节都可以在 Java 文档的 [ignoreStubs(Object...)](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#ignoreStubs(java.lang.Object...)) 部分看到。
+更好的例子和更多的细节都可以在 Java 文档的 [ignoreStubs(Object...)][ignoreStubs] 部分看到。
 
+[verifyNoMoreInteractions]:http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#verifyNoMoreInteractions(java.lang.Object...)
+[ignoreStubs]:http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#ignoreStubs(java.lang.Object...)
 <b id="26"></b>
 
 ### 26. mock详情 (2.2.x中改进)
@@ -754,19 +761,18 @@ Mockito 提供API来查看mock对象的详情。这些API对高级用户和mock�
    System.out.println(mockingDetails(mock).printInvocations());
 ```
 
-更多信息请查看[MockingDetails](https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/MockingDetails.html)的java文档.
+更多信息请查看[MockingDetails][MockingDetails]的java文档.
 
+[MockingDetails]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/MockingDetails.html
 
 <b id="27"></b>
-### 27. [真实实例的委托调用][delegating_call_to_real_instance] (Since 1.9.5)
+### 27. 真实实例的委托调用 (Since 1.9.5)
 
-有用的间谍或局部mock的对象，有时用常规 spy API很难去mock或spy。
-从 Mockito 的 1.10.11 版本开始， delegate 有可能和 mock 的类型相同也可能不同。如果不是同一类型，
-delegate 类型需要提供一个匹配方法否则就会抛出一个异常。下面是关于这个特性的一些用例:
+代理调用对间谍或局部mock的对象有用的，这些对象用常规 spy API很难去mock或spy。从 Mockito 的 1.10.11 版本开始， delegate 有可能和 mock 的类型相同也可能不同。如果不是同一类型，delegate 类型需要提供一个匹配方法否则就会抛出一个异常。可能用到这个特性的案例:
 
 - 带有 interface 的 final 类
 - 已经自定义代理的对象
-- 带有 finalize 方法的特殊对象，就是避免重复执行。
+- 带有 finalize 方法的特殊对象，就是避免执行2次。
 
 和常规 spy 的不同:
 
@@ -774,38 +780,32 @@ delegate 类型需要提供一个匹配方法否则就会抛出一个异常。�
 创建时被用来拷贝状态信息。如果你通过标准 spy 调用一个方法，这个 spy 会调用其内部的其他方法记录这次操作，
 以便后面验证使用。等效于存根 (stubbed)操作。
 
-- mock delegates 只是简单的把所有方法委托给 delegate。delegate 一直被当成它代理的方法使用。如果你
-从一个 mock 调用它被委托的方法，它会调用其内部方法，这些调用不会被记录，stubbing 在这里也不会生效。
-Mock 的 delegates 相对于标准的 spy 来说功能弱了很多，不过在标准 spy 不能被创建的时候很有用。
+- 代理方式的 mock 只是简单的把所有方法委托给 delegate。delegate 一直被当成它所代理的方法使用。如果你调用委托的mock对象上的方法，它会调用其内部的其他方法，这些调用不会被记录，打桩动作 在这里也不会生效。委托方式的Mock 相对于标准的 spy 来说功能弱了很多，不过在标准 spy 不能被创建的时候这还是很有用。
 
 更多信息可以看这里 [AdditionalAnswers.delegatesTo(Object)][AdditionalAnswers].
 
-[delegating_call_to_real_instance]:http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#delegating_call_to_real_instance
 [spy]:http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#spy(T)
 [AdditionalAnswers]:http://site.mockito.org/mockito/docs/current/org/mockito/AdditionalAnswers.html#delegatesTo(java.lang.Object)
 
----
-
 <b id="28"></b>
-### 28. [MockMaker API][mock_maker_plugin](Since 1.9.5)
+### 28. MockMaker API (Since 1.9.5)
 
-为了满足用户的需求和 Android 平台使用。Mockito 现在提供一个扩展点，允许替换代理生成引擎。默认情况下，Mockito 使用 [Byte Buddy][byte_buddy] 创建动态代理。
+为了满足用谷歌Android用户的需求，Mockito 现在提供一个扩展点，允许替换代理生成引擎。默认情况下，Mockito 使用 [Byte Buddy][byte_buddy] 创建动态代理。
 
 这个扩展点是为想要扩展 Mockito 功能的高级用户准备的。比如，我们现在就可以在 [dexmaker][dexmaker] 的帮助下使用 Mockito
 测试 Android。
 
 更多的细节，原因和示例请看 [MockMaker][MockMaker] 的文档。
 
-[mock_maker_plugin]:http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#mock_maker_plugin
 [MockMaker]:http://site.mockito.org/mockito/docs/current/org/mockito/plugins/MockMaker.html
 [byte_buddy]:https://github.com/raphw/byte-buddy
 [dexmaker]:https://github.com/crittercism/dexmaker
 
----
-<b id="29"></b>
-### 29. [BDD 风格的验证][BDD_behavior_verification] (Since 1.10.0)
 
-开始验证时，通过使用**then**关键字，可以开启 Behavior Driven Development (BDD) 风格的验证。
+<b id="29"></b>
+### 29. BDD 风格的验证 (Since 1.10.0)
+
+开始验证时，使用**then**关键字可以开启 Behavior Driven Development (BDD) 风格的验证。
 
 ```java
  given(dog.bark()).willReturn(2);
@@ -817,18 +817,13 @@ Mock 的 delegates 相对于标准的 spy 来说功能弱了很多，不过在�
 
 ```
 
-更多信息请查阅 [ BDDMockito.then(Object)][then] .
+更多信息请查阅 [BDDMockito.then(Object)][then] .
 
-
-[BDD_behavior_verification]:http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#BDD_behavior_verification
 [then]:http://site.mockito.org/mockito/docs/current/org/mockito/BDDMockito.html#then(T)
 
 
- ---
-
-
 <b id="30"></b>
-### 30. [Spying 或 mocking 抽象类][spying_abstract_classes] (1.10.12版本加入，在2.7.13 和 2.7.14版特征得到增强))
+### 30. 监视 或 模拟 抽象类 (1.10.12版本加入，在2.7.13 和 2.7.14版特征得到增强))
 
 现在可以方便的 spy 一个抽象类。注意，过度使用 spy 或许意味着代码的设计上有问题。(see [spy(Object)][spy]).
 
@@ -859,18 +854,14 @@ Mock 的 delegates 相对于标准的 spy 来说功能弱了很多，不过在�
 
 更多信息请见 [MockSettings.useConstructor()][useConstructor] .
 
-[spying_abstract_classes]:http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#spying_abstract_classes
 [useConstructor]:http://site.mockito.org/mockito/docs/current/org/mockito/MockSettings.html#useConstructor()
 
 
- ---
-
-
 <b id="31"></b>
-### 31. [Mockito mocks 可以通过 classloaders 序列化/反序列化][serilization_across_classloader] (Since 1.10.0)
+### 31. Mockito的模拟对象 可以通过 classloaders 序列化/反序列化 (Since 1.10.0)
 
  Mockito 通过 classloader 引入序列化。和其他形式的序列化一样，所有 mock 层的对象类型都要可序列化，
- 包括 answers。因为序列化模式需要大量的工作，所以这是一个可选择设置。
+ 包括 answers。因为序列化模式需要大量的工作，所以这是一个可选配置。
 
  ```java
  // 常规的 serialization
@@ -882,16 +873,13 @@ Mock 的 delegates 相对于标准的 spy 来说功能弱了很多，不过在�
 
 更多信息请查看 [MockSettings.serializable(SerializableMode)][serializable].
 
-
-[serilization_across_classloader]:http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#serilization_across_classloader
 [serializable]:http://site.mockito.org/mockito/docs/current/org/mockito/MockSettings.html#serializable(org.mockito.mock.SerializableMode)
 
- ---
 
 <b id="32"></b>
-### 32. [Deep stubs 更好的泛型支持][better_generic_support_with_deep_stubs] (Since 1.10.0)
+### 32. Deep stubs 更好的泛型支持 (Since 1.10.0)
 
- Deep stubbing 现在可以更好的查找类的泛型信息。这就意味着像这样的类
+ 深度打桩模式 现在可以更好的查找类的泛型信息。这就意味着像这样的类
  不必去 mock 它的行为就可以使用。
 
 ```java
@@ -908,15 +896,11 @@ class Lines extends List<Line> {
 
 请注意，大多数情况下 mock 返回一个 mock 对象是错误的。
 
-[better_generic_support_with_deep_stubs]:http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#better_generic_support_with_deep_stubs
-
- ---
 
 <b id="33"></b>
-### 33.  [Mockito JUnit rule][mockito_junit_rule] (Since 1.10.17)
+### 33.  Mockito JUnit rule (Since 1.10.17)
 
-
-Mockito 现在提供一个 JUnit rule。目前为止，有两种方法可以初始化 fields ，这些fields使用了 Mockito 提供的注解比如
+Mockito 现在提供一个 JUnit 的 rule。目前为止，有两种方法可以初始化 fields ，这些fields使用了 Mockito 提供的注解比如
 [@Mock][Mock_], [@Spy][Spy_], [@InjectMocks][InjectMocks_] 等等。
 
 - 用 @RunWith([@MockitoJUnitRunner.class][MockitoJUnitRunner]) 标注 JUnit 测试类
@@ -934,26 +918,21 @@ Mockito 现在提供一个 JUnit rule。目前为止，有两种方法可以初�
 
 更多信息到这里查看 [MockitoJUnit.rule()][rule].
 
-[mockito_junit_rule]:http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#mockito_junit_rule
 [Mock_]:http://site.mockito.org/mockito/docs/current/org/mockito/Mock.html
 [Spy_]:http://site.mockito.org/mockito/docs/current/org/mockito/Spy.html
 [InjectMocks_]:http://site.mockito.org/mockito/docs/current/org/mockito/InjectMocks.html
 [MockitoJUnitRunner]:http://site.mockito.org/mockito/docs/current/org/mockito/runners/MockitoJUnitRunner.html
 [initMocks]:http://site.mockito.org/mockito/docs/current/org/mockito/MockitoAnnotations.html#initMocks(java.lang.Object)
-
 [rule]:http://site.mockito.org/mockito/docs/current/org/mockito/junit/MockitoJUnit.html#rule()
 
- ---
 
 <b id="34"></b>
-### 34. [开启和关闭 plugins][PluginSwitch] (Since 1.10.15)
+### 34. 开启和关闭插件的开关 (Since 1.10.15)
 
 这是一个测试特性，可以控制一个 mockito-plugin 开启或者关闭。详情请查看 [PluginSwitch][PluginSwitch]
 
-[plugin_switch]:http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html#plugin_switch
 [PluginSwitch]:http://site.mockito.org/mockito/docs/current/org/mockito/plugins/PluginSwitch.html
 
----
 
 <b id="35"></b>
 ### 35. 自定义验证失败信息 (Since 2.1.0)
@@ -972,9 +951,9 @@ Mockito 现在提供一个 JUnit rule。目前为止，有两种方法可以初�
 <b id="36"></b>
 ### 36. Java 8 Lambda匹配器的支持 (Since 2.1.0)
 
-你可以在参数匹配器([ArgumentMatcher][ArgumentMatcher])上使用Java 8 lambda表达式，来减少对参数捕获器(ArgumentCaptor)的依赖。如果你需要验证，mock对象上方法调用的输入是正确的，那么你需要正常使用参数捕获器来找到使用过的操作数，并且之后对它们做断言。对于复杂的例子这是有用的，当然它也很啰嗦。
+你可以在参数匹配器([ArgumentMatcher][ArgumentMatcher])上使用Java 8 lambda表达式，来减少对参数捕获器(ArgumentCaptor)的依赖。如果你需要验证mock对象上方法调用的输入是正确的，那么你需要正常使用参数捕获器来找到使用过的操作数，并且之后对它们做断言。对于复杂的例子这是有用的，当然它也很啰嗦。
 
-写一个lambda来表示匹配关系是很容易的。你方法的参数使用argThat进行连接时，将作为强类型对象传给参数匹配器，所以通过这种方式能做任何事情。
+写一个lambda来表示匹配关系是很容易的。你方法的参数使用argThat进行连接时，参数将作为强类型对象传给参数匹配器，所以通过这种方式能做任何事情。
 
 例如:
 ```java
@@ -1002,7 +981,7 @@ Mockito 现在提供一个 JUnit rule。目前为止，有两种方法可以初�
 <b id="37"></b>
 ### 37. Java 8 自定义Answer的支持 (Since 2.1.0)
 
-Answer接口只有一个方法，Java 8 使用lambda表达式来实现它非常简单。你越需要使用方法调用的参数，就越需要对InvocationOnMock的参数进行类型转换。
+[Answer][Answer]接口只有一个方法，Java 8 使用lambda表达式来实现它非常简单。你越需要使用方法调用的参数，就越需要对来自InvocationOnMock的参数进行类型转换。
 
 例如:
 ```java
@@ -1017,7 +996,7 @@ Answer接口只有一个方法，Java 8 使用lambda表达式来实现它非常�
      .when(mock).doSomething(anyString(), anyString(), anyString());
 ```
 
-方便起见，现在我们可以定义这样的answer/actions，用被调用方法的参数作为answer/actions中lambda的入参。即使在Java 7和更低版本，自定义基于类型化接口的answers能减少样板代码。在特定场景，这种方法使测试使用了回调的方法更加容易。answer() 和 answerVoid()方法可以创建answer对象。它们依赖的相关answer接口在org.mockito.stubbing包下，Answer接口最多支持5个参数。
+方便起见，现在我们可以定义这样的answer/actions，用被调用方法的参数作为answer/actions中lambda的入参。即使在Java 7和更低版本，自定义基于类型化接口的answers也能减少样板代码。在特定场景，这种方法使测试使用了回调的方法更加容易。answer() 和 answerVoid()方法可以创建answer对象。它们依赖的相关answer接口在org.mockito.stubbing包下，Answer接口最多支持5个参数。
 
 例如:
 ```java
@@ -1066,6 +1045,9 @@ Answer接口只有一个方法，Java 8 使用lambda表达式来实现它非常�
      }})).when(mock).execute(anyString(), anyString());
 ```
 
+[Answer]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/stubbing/Answer.html
+
+
 <b id="38"></b>
 ### 38. 元数据和泛型信息保留 (Since 2.1.0)
 
@@ -1090,7 +1072,7 @@ Mockito 现在会保留mock方法和类上的注解信息，也会保留泛型�
 <b id="39"></b>
 ### 39. 模拟final类型，枚举 和 final方法 (Since 2.1.0)
 
-Mockito 现在对模拟final类和方法提供一个孵化的，可选的的支持。这是一个极好的改进，说明了Mockito永恒的追求：提高测试体验。我们的志向是：Mockito要支持final类和方法。以前，它们被认为是不可模拟的，阻止用户去模拟的。我们已经开始讨论怎么使这个特性被默认支持。当前，这个特性仍然是可选的，我们等待社区里更多的反馈。
+Mockito 现在对模拟final类和方法提供一个孵化中的，可选的的支持。这是一个极好的改进，说明了Mockito永恒的追求：提高测试体验。我们的志向是：Mockito要支持final类和方法。以前，它们被认为是不可模拟的，阻止用户去模拟的。我们已经开始讨论怎么使这个特性被默认支持。当前，这个特性仍然是可选的，我们等待社区里更多的反馈。
 
 这个可选的mock maker，它使用Java instrumentation API和子类两者结合的方式，而不是创建一个新的类来代表这个mock对象。通过这种方式，使模拟final类和方法成为了可能。
 
@@ -1100,35 +1082,45 @@ Mockito 现在对模拟final类和方法提供一个孵化的，可选的的支�
 
 关于这个mock maker几个需要注意的点是:
 - 模拟final类和枚举的mock配置是不兼容的:
- - 显示序列化支持 withSettings().serializable()
+ - 显示的序列化支持 withSettings().serializable()
  - 特殊接口 withSettings().extraInterfaces()
 - 一些方法不能被模拟
  - java.*包下的方法
  - 原生方法
-- 这个mock maker被设计成围绕着Java Agent运行时的附件(attachment)；这个要求一个兼容的JVM，它是JDK的一部分(或Java 9的虚拟机)。当运行在Java 9之前没JDK的虚拟机上，可以在JVM启动时，通过-javaagent参数，手动添加Byte Buddy的jar包。
+- 这个mock maker被设计成围绕着Java Agent运行时的附件(attachment)；这个要求一个兼容的JVM，JVM是JDK的一部分(或Java 9的虚拟机)。当运行在Java 9之前没JDK的虚拟机上，可以在JVM启动时，通过-javaagent参数，手动添加[Byte Buddy的jar包][bytebuddy]。
 
 如果你对这个特性的细节感兴趣，请阅读org.mockito.internal.creation.bytebuddy.InlineByteBuddyMockMaker的java文档。
+
+[bytebuddy]:http://bytebuddy.net/
 
 <b id="40"></b>
 ### 40. “严格的”Mocktio能提高生产效率并使测试用例更清晰(2.+版本之后)
 
 为什么“严格的”Mockito能使你的生产率更好，并使你的测试更整洁，看:
-- 通过JUnit Rules来开启严格打桩 - MockitoRule.strictness(Strictness) with Strictness.STRICT_STUBS
+- 通过JUnit Rules来开启严格打桩 - [MockitoRule.strictness(Strictness)][strictness] with [Strictness.STRICT_STUBS][STRICT_STUBS]
 - 通过Junit Runner来开启严格打桩 - MockitoJUnitRunner.StrictStubs
-- 如果你不能使用runner/rule(例如使用TestNG)来开启严格打桩 - MockitoSession
-- 通过MockitoJUnitRunner发现非必要测试桩
-- 打桩参数不匹配的警告，记录在MockitoHint中
+- 如果你不能使用runner/rule(例如使用TestNG)来开启严格打桩 - [MockitoSession][MockitoSession]
+- 通过[MockitoJUnitRunner][MockitoJUnitRunner]发现非必要测试桩
+- 打桩参数不匹配的警告，记录在[MockitoHint][MockitoHint]中
 
-Mockito默认是一个“宽松的”模拟框架。mock对象可以做交互，而不用事先做设置期望的动作。这是有意的，它通过强制用户明确地表达他们想要 打桩/验证的内容来提高测试的质量。它也非常直观的，易于使用，并且合“given”，“when”，“then”整洁的测试代码模板完美融合在一起。这也是区别于过去的经典模拟框架，过去的框架默认都是严格的。
+Mockito默认是一个“宽松的”模拟框架。mock对象可以做交互，而不用事设置期望的行为。这是有意设计的，它通过强制用户明确地表达他们想要 打桩/验证的内容来提高测试的质量。它也非常直观的，易于使用，并且和“given”，“when”，“then”整洁的测试代码模板完美融合在一起。这也是区别于过去其他的经典模拟框架，过去的框架默认都是严格的。
 
 默认是“宽松的”，有时让Mockito的测试用例难于被debug。有些情况下，配置错误的打桩强制用户使用调试器执行测试用例。理想状况下，测试用例失败是显而易见的结果，并且不需要调试器来定位根本原因。从2.1版本开始，Mockito拥有一些新的特性，这些特性推动框架走向“严格性”。我们想让Mockito提供出色的调试能力，同时也不丢失它核心的模拟风格，针对直观性，清晰性和整洁的测试代码进行优化。
 
-帮助 Mockito！尝试这些新的特性，给我们反馈，加入GitHub issue 769关于Mockito严格性的讨论。
+帮助 Mockito！尝试这些新的特性，给我们反馈，加入GitHub [issue 769][issues769]关于Mockito严格性的讨论。
+
+[strictness]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/junit/MockitoRule.html#strictness-org.mockito.quality.Strictness-
+[STRICT_STUBS]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/quality/Strictness.html#STRICT_STUBS
+[MockitoSession]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/MockitoSession.html
+[MockitoJUnitRunner]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/junit/MockitoJUnitRunner.html
+[MockitoHint]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/quality/MockitoHint.html
+[issues769]:https://github.com/mockito/mockito/issues/769
+
 
 <b id="41"></b>
 ### 41. 框架集成的高级公开API (2.10.+版本之后)
 
-在2017的夏天，我们觉得Mockito应该为高级框架集成提供更好的API。这个新的API不是为了写单元测试的用户。它旨在用于需要用一些定制逻辑扩展或包装Mockito的其他测试工具和模拟框架。在设计期间和实现过程中(issue 1110)，我们开发和改变了下列公开API的元素：
+在2017的夏天，我们觉得Mockito应该为高级框架集成提供[更好的API][mocking-faber]。这个新的API不是为了写单元测试的用户。它旨在用于需要用一些定制逻辑扩展或包装Mockito的其他测试工具和模拟框架。在设计期间和实现过程中(issue 1110)，我们开发和改变了下列公开API的元素：
 
 - 新的 MockitoPlugins - 使框架集成者能够访问默认的Mockito插件。当需要实现自定义插件(例如MockMaker)，并且将某些行为委托给默认Mockito的实现。
 - 新的 MockSettings.build(Class) - 创建模拟配置的不可变的视图，供Mockito稍后使用。使用InvocationFactory创建invocations 或 当实现自定义MockHandler时，视图将非常有用。
@@ -1142,30 +1134,55 @@ Mockito默认是一个“宽松的”模拟框架。mock对象可以做交互，
 
 你有反馈吗？请在issue 1110里留言。
 
+[mocking-faber]:https://www.linkedin.com/pulse/mockito-vs-powermock-opinionated-dogmatic-static-mocking-faber
+
+
 <b id="42"></b>
 ### 42. 集成新的API: 监听验证开始(verification start)事件(2.11.+版本之后)
 
-Spring Boot等框架集成需要公共API来处理双代理用例(issue 1191)。我们新增的:
+Spring Boot等框架集成需要公共API来处理双代理用例([issue 1191][issues1191])。我们新增的:
 
-- 新的 VerificationStartedListener 和 VerificationStartedEvent 使框架集成者替换模拟对象以进行验证。主要的驱动用例是Spring Boot的集成。详情请看VerificationStartedListener的java文档。
-- 新的公共方法MockSettings.verificationStartedListeners(VerificationStartedListener...)允许在mock创建时，提供验证启动的监听器。
-- 新的方便的方法MockingDetails.getMock()被添加，用来使MockingDetails API更加完整。我们发现这个方法在实例化时非常有用。
+- 新的 [VerificationStartedListener][VerificationStartedListener] 和 [VerificationStartedEvent][VerificationStartedEvent] 使框架集成者替换模拟对象以进行验证。主要的驱动用例是Spring Boot的集成。详情请看[VerificationStartedListener][VerificationStartedListener]的java文档。
+- 新的公共方法[MockSettings.verificationStartedListeners(VerificationStartedListener...)][listeners.VerificationStartedListener]允许在mock创建时，提供验证启动的监听器。
+- 新的方便的方法[MockingDetails.getMock()][MockingDetails.html#getMock]被添加，用来使MockingDetails API更加完整。我们发现这个方法在实例化时非常有用。
+
+[issues1191]:https://github.com/mockito/mockito/issues/1191
+[VerificationStartedListener]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/listeners/VerificationStartedListener.html
+[VerificationStartedEvent]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/listeners/VerificationStartedEvent.html
+[VerificationStartedListener]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/listeners/VerificationStartedListener.html
+[listeners.VerificationStartedListener]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/MockSettings.html#verificationStartedListeners-org.mockito.listeners.VerificationStartedListener...-
+[MockingDetails.html#getMock]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/MockingDetails.html#getMock--
+
 
 <b id="43"></b>
 ### 43. 集成新的API: 测试框架支持MockitoSession(2.15.+版本之后)
 
-MockitoSessionBuilder and MockitoSession得到增强，以便通过测试框架集成实现重用(例如MockitoRule对于JUnit一样)。
+[MockitoSessionBuilder][MockitoSessionBuilder] and [MockitoSession][MockitoSession]得到增强，以便通过测试框架集成实现重用(例如[MockitoRule][MockitoRule]对于JUnit一样)。
 
-- MockitoSessionBuilder.initMocks(Object...) 允许传入多个测试类的实例，用来初始化被Mockito注解(例如@Mock)注释的字段。当测试使用多个(例如内嵌的)测试类实例时，这个方法对高级框架集成非常有用(例如 JUnit Jupiter)。
-- MockitoSessionBuilder.name(String)允许将名称从测试框架传递到MockitoSession，当使用Strictness.WARN时，MockitoSession将用于打印警告。
+- [MockitoSessionBuilder.initMocks(Object...)][initMocks-java.lang.Object] 允许传入多个测试类的实例，用来初始化被Mockito注解(例如@[Mock][Mock])注释的字段。当测试使用多个(例如内嵌的)测试类实例时，这个方法对高级框架集成非常有用(例如 JUnit Jupiter)。
+- [MockitoSessionBuilder.name(String)][name-java.lang.String]允许将名称从测试框架传递到MockitoSession，当使用Strictness.WARN时，MockitoSession将用于打印警告。
 - MockitoSessionBuilder.logger(MockitoSessionLogger)使定制，用于完成模拟时产生的提示/告警 的logger成为了可能(对于测试和连接JUnit Jupiter等测试框架提供的报告功能很有用)。
 - MockitoSession.setStrictness(Strictness)允许在一次性情况下，改变一个MockitoSession的严格性。例如，它可以为一个类下的所有测试用例设置一个默认的严格性，但是也可以改变单个或几个测试用例的严格性。
 - 添加MockitoSession.finishMocking(Throwable)用于避免因多个竞争的失败而可能出现的混乱。当提供的失败用例不是null时，它会关闭某些检查。
 
+[MockitoSessionBuilder]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/session/MockitoSessionBuilder.html
+[MockitoSession]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/MockitoSession.html
+[MockitoRule]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/junit/MockitoRule.html
+[initMocks-java.lang.Object]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/session/MockitoSessionBuilder.html#initMocks-java.lang.Object...-
+[Mock]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/Mock.html
+[name-java.lang.String]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/session/MockitoSessionBuilder.html#name-java.lang.String-
+[Strictness]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/quality/Strictness.html#WARN
+[MockitoSessionLogger]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/session/MockitoSessionBuilder.html#logger-org.mockito.session.MockitoSessionLogger-
+[setStrictness]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/MockitoSession.html#setStrictness-org.mockito.quality.Strictness-
+[finishMocking]:https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/MockitoSession.html#finishMocking-java.lang.Throwable-
+
 <b id="44"></b>
 ### 44. org.mockito.plugins.InstantiatorProvider泄露内部API所以被org.mockito.plugins.InstantiatorProvider2替代(2.15.4版本之后)
 
-InstantiatorProvider返回了一个内部API。因此它被启用并且被InstantiatorProvider2替代。旧的调用者提供商将继续工作，但是它被推荐切换到新的API。
+InstantiatorProvider返回了一个内部API。因此它被启用并且被[InstantiatorProvider2][InstantiatorProvider2]替代。旧的调用者提供商将继续工作，但是它被推荐切换到新的API。
+
+[InstantiatorProvider2https://static.javadoc.io/org.mockito/mockito-core/2.23.4/org/mockito/plugins/InstantiatorProvider2.html
+
 
 <b id="45"></b>
 ### 45. JUnit5+的扩展
